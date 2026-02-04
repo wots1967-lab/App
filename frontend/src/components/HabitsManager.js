@@ -20,8 +20,11 @@ const HabitsManager = () => {
   const [newHabit, setNewHabit] = useState({ name: '', description: '' });
 
   useEffect(() => {
-    fetchHabits();
-  }, []);
+    if (token) {
+      fetchHabits();
+    }
+    // eslint-disable-next-line
+  }, [token]);
 
   const fetchHabits = async () => {
     try {
