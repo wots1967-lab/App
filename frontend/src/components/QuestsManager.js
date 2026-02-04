@@ -191,7 +191,14 @@ const QuestsManager = () => {
         {loading ? (
           <div className="text-center py-8 text-text-dark-secondary">Завантаження...</div>
         ) : quests.length === 0 ? (
-          <div className="text-center py-8 text-text-dark-secondary">Немає квестів</div>
+          <div className="text-center py-12 px-6">
+            <p className="text-lg text-text-dark-primary mb-2">
+              Створюй свої квести, виставляй унікальні винагороди, запрошуй друзів.
+            </p>
+            <p className="text-text-dark-secondary">
+              Зроби з великих цілей справжні пригоди.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4">
             {activeQuests.map(renderQuestItem)}
