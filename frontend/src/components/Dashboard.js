@@ -6,7 +6,7 @@ import TaskList from './TaskList';
 import QuickAddTask from './QuickAddTask';
 import StatsOverview from './StatsOverview';
 import HabitsManager from './HabitsManager';
-import QuestsManager from './QuestsManager';
+// import QuestsManager from './QuestsManager';
 import SkillsOverview from './SkillsOverview';
 import LevelUpModal from './LevelUpModal';
 import AchievementNotification from './AchievementNotification';
