@@ -211,6 +211,7 @@ class Task(BaseModel):
     xpReward: int = 35
     coinReward: int = 25
     skills: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
     priority: str = "medium"
     dueDate: Optional[str] = None
     completed: bool = False
@@ -224,6 +225,7 @@ class TaskCreate(BaseModel):
     type: str = "daily"
     difficulty: str = "medium"
     skills: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
     priority: str = "medium"
     dueDate: Optional[str] = None
 
