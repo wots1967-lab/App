@@ -12,6 +12,9 @@ const CharacterCard = () => {
   if (!character) return null;
 
   const xpPercentage = (character.xp / character.xpToNextLevel) * 100;
+  const hp = character.hp || 100;
+  const maxHp = character.maxHp || 100;
+  const hpPercentage = (hp / maxHp) * 100;
 
   return (
     <motion.div
