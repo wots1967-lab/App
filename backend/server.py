@@ -880,18 +880,12 @@ async def get_shop_items():
 
 @api_router.post("/shop/purchase/{item_id}")
 async def purchase_item(item_id: str, current_user: dict = Depends(get_current_user)):
-    # Get item details
-    items_map = {
-        "xp_boost": {"price": 500, "name": "Зачарований амулет"},
-        "coin_boost": {"price": 300, "name": "Золота зброя"},
-        "hp_restore": {"price": 200, "name": "Зілля здоров'я"},
-        "streak_protect": {"price": 400, "name": "Щит захисту"},
-    }
+    # Get all items
+    all_items = await get_shop_items()
+    item = next((i for i in all_items if i['id'] == item_id), None)
     
-    if item_id not in items_map:
+    if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    
-    item = items_map[item_id]
     
     user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
     if user['character']['coins'] < item['price']:
@@ -902,14 +896,17 @@ async def purchase_item(item_id: str, current_user: dict = Depends(get_current_u
     # Add item to inventory
     if 'inventory' not in user:
         user['inventory'] = []
-    user['inventory'].append(item_id)
+    
+    # Check if already owned
+    if item_id not in user['inventory']:
+        user['inventory'].append(item_id)
     
     await db.users.update_one(
         {"id": current_user['id']},
         {"$set": {"character.coins": user['character']['coins'], "inventory": user['inventory']}}
     )
     
-    return {"message": f"{item['name']} purchased!", "character": user['character']}
+    return {"message": f"Мантру придбано!", "character": user['character'], "inventory": user['inventory']}
 
 @api_router.post("/user/equip/{item_id}")
 async def equip_item(item_id: str, current_user: dict = Depends(get_current_user)):
