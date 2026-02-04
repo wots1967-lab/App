@@ -116,6 +116,7 @@ const Dashboard = () => {
             Quest Manager
           </h1>
           <div className="flex items-center gap-4">
+            <EquipmentMenu />
             <Button
               variant="ghost"
               size="icon"
@@ -128,11 +129,24 @@ const Dashboard = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => window.location.href = '/profile'}
+              onClick={() => window.location.href = '/friends'}
               className="text-text-dark-secondary hover:text-text-dark-primary"
+              data-testid="friends-button"
+            >
+              <Users size={20} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => window.location.href = '/profile'}
+              className="text-text-dark-secondary hover:text-text-dark-primary flex items-center gap-2"
               data-testid="profile-button"
             >
-              <User size={20} />
+              {user?.character?.avatar ? (
+                <img src={user.character.avatar} alt="Avatar" className="w-6 h-6 rounded-full" />
+              ) : (
+                <User size={20} />
+              )}
             </Button>
             <Button
               variant="ghost"
