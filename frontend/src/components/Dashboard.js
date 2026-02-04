@@ -227,6 +227,10 @@ const Dashboard = () => {
               </div>
             </div>
           </TabsContent>
+
+          <TabsContent value="shop">
+            <ShopPage />
+          </TabsContent>
         </Tabs>
 
         {!isUnlocked && (
