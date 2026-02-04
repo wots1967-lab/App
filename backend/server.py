@@ -861,10 +861,20 @@ async def update_profile(req: UpdateProfileRequest, current_user: dict = Depends
 @api_router.get("/shop/items")
 async def get_shop_items():
     items = [
-        {"id": "xp_boost", "name": "Зачарований амулет", "description": "Підсилює отримання досвіду на 50%", "type": "boost", "effect": "xp", "effectValue": 50, "price": 500, "icon": "✨"},
-        {"id": "coin_boost", "name": "Золота зброя", "description": "Підсилює монети на 15%", "type": "boost", "effect": "coins", "effectValue": 15, "price": 300, "icon": "⚔️"},
-        {"id": "hp_restore", "name": "Зілля здоров'я", "description": "Відновлює 50 HP", "type": "consumable", "effect": "hp", "effectValue": 50, "price": 200, "icon": "🧪"},
-        {"id": "streak_protect", "name": "Щит захисту", "description": "Захищає серію від розриву", "type": "protection", "effect": "streak", "effectValue": 1, "price": 400, "icon": "🛡️"},
+        # Мантри Сили
+        {"id": "mantra_strength_1", "name": "Я зібраний. Я тримаю напрям.", "category": "strength", "description": "Коли розум не розпорошений, навіть мала дія має вагу.", "type": "boost", "effect": "stats", "effectValue": 5, "price": 100, "icon": "🧠"},
+        {"id": "mantra_strength_2", "name": "Моя воля сильніша за опір.", "category": "strength", "description": "Ти не борешся з труднощами. Ти їх переварюєш.", "type": "boost", "effect": "stats", "effectValue": 10, "price": 200, "icon": "🧠"},
+        {"id": "mantra_strength_3", "name": "Я — джерело сили. Вона в мені.", "category": "strength", "description": "Стан внутрішнього ядра. Сила стає фоном, а не зусиллям.", "type": "boost", "effect": "stats", "effectValue": 15, "price": 300, "icon": "🧠"},
+        
+        # Мантри Достатку
+        {"id": "mantra_coins_1", "name": "Я дозволяю собі отримувати.", "category": "wealth", "description": "Достаток починається з дозволу, а не з боротьби.", "type": "boost", "effect": "coins", "effectValue": 5, "price": 100, "icon": "🪙"},
+        {"id": "mantra_coins_2", "name": "Мої дії винагороджуються.", "category": "wealth", "description": "Світ відповідає на чіткі рухи.", "type": "boost", "effect": "coins", "effectValue": 10, "price": 200, "icon": "🪙"},
+        {"id": "mantra_coins_3", "name": "Я в потоці обміну з життям.", "category": "wealth", "description": "Ти не накопичуєш. Ти циркулюєш — і тому маєш більше.", "type": "boost", "effect": "coins", "effectValue": 15, "price": 300, "icon": "🪙"},
+        
+        # Мантри Досвіду
+        {"id": "mantra_xp_1", "name": "Кожен крок робить мене майстром.", "category": "experience", "description": "Навіть буденне стає навчанням.", "type": "boost", "effect": "xp", "effectValue": 5, "price": 100, "icon": "✨"},
+        {"id": "mantra_xp_2", "name": "Я швидко вчуся і глибоко інтегрую.", "category": "experience", "description": "Не кількість спроб, а якість засвоєння.", "type": "boost", "effect": "xp", "effectValue": 10, "price": 200, "icon": "✨"},
+        {"id": "mantra_xp_3", "name": "Моє життя — шлях зростання.", "category": "experience", "description": "Будь-який досвід працює на тебе. Навіть складний.", "type": "boost", "effect": "xp", "effectValue": 15, "price": 300, "icon": "✨"},
     ]
     return items
 
