@@ -556,15 +556,38 @@ async def track_habit(habit_id: str, current_user: dict = Depends(get_current_us
     )
     
     user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
-    user['character']['coins'] += habit['coinReward']
-    user, leveled_up = add_xp(user, habit['xpReward'])
+    
+    # Check habit type for HP/rewards
+    if habit.get('type') == 'bad':
+        # Bad habit - lose HP
+        user['character']['hp'] = max(0, user['character']['hp'] - 15)
+        
+        # Check if HP is 0 - apply penalty
+        if user['character']['hp'] == 0:
+            user['character']['level'] = max(1, user['character']['level'] - 2)
+            user['character']['coins'] = max(0, user['character']['coins'] - 1000)
+            user['character']['hp'] = user['character']['maxHp']
+            user['character']['xpToNextLevel'] = calculate_xp_for_level(user['character']['level'])
+            penalty_applied = True
+        else:
+            penalty_applied = False
+    else:
+        # Good habit - gain rewards
+        user['character']['coins'] += habit['coinReward']
+        user, leveled_up = add_xp(user, habit['xpReward'])
+        penalty_applied = False
     
     await db.users.update_one(
         {"id": current_user['id']},
         {"$set": {"character": user['character']}}
     )
     
-    return {"habit": habit, "character": user['character'], "leveledUp": leveled_up}
+    return {
+        "habit": habit,
+        "character": user['character'],
+        "leveledUp": leveled_up if habit.get('type') != 'bad' else False,
+        "penaltyApplied": penalty_applied
+    }
 
 @api_router.delete("/habits/{habit_id}")
 async def delete_habit(habit_id: str, current_user: dict = Depends(get_current_user)):
