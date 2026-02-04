@@ -127,7 +127,9 @@ const Dashboard = () => {
             <Button
               variant="ghost"
               size="icon"
+              onClick={() => window.location.href = '/profile'}
               className="text-text-dark-secondary hover:text-text-dark-primary"
+              data-testid="profile-button"
             >
               <User size={20} />
             </Button>
