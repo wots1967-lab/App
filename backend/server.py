@@ -303,6 +303,33 @@ class UpdateThemeRequest(BaseModel):
 class UpdateAvatarRequest(BaseModel):
     avatar: str
 
+class ShopItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str
+    type: str
+    effect: str
+    effectValue: int
+    price: int
+    icon: str
+
+class UpdateProfileRequest(BaseModel):
+    age: Optional[int] = None
+    bio: Optional[str] = None
+    globalGoals: Optional[List[str]] = None
+
+class Friend(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    friendId: str
+    friendEmail: str
+    friendName: str
+    status: str = "pending"
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AddFriendRequest(BaseModel):
+    friendEmail: EmailStr
+
 # --- Auth Routes ---
 @api_router.post("/auth/register", response_model=AuthResponse)
 async def register(req: RegisterRequest):
