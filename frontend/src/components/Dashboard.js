@@ -26,6 +26,11 @@ const Dashboard = () => {
   const { theme, toggleTheme } = useTheme();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [levelUpData, setLevelUpData] = useState({ oldLevel: 1, newLevel: 1 });
+  const [achievement, setAchievement] = useState(null);
+
+  const isUnlocked = user?.character?.level >= 3;
 
   useEffect(() => {
     fetchTasks();
@@ -52,19 +57,25 @@ const Dashboard = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Update user character with new XP/coins
       const updatedUser = { ...user, character: response.data.character };
       updateUser(updatedUser);
       
-      // Refresh tasks
       await fetchTasks();
       
-      // Show level up notification if needed
       if (response.data.leveledUp) {
-        // TODO: Show level up modal
+        setLevelUpData({
+          oldLevel: response.data.oldLevel,
+          newLevel: response.data.newLevel
+        });
+        setShowLevelUp(true);
+      }
+      
+      if (response.data.achievements && response.data.achievements.length > 0) {
+        setAchievement(response.data.achievements[0]);
       }
     } catch (error) {
       console.error('Failed to complete task:', error);
+      toast.error('Помилка при виконанні завдання');
     }
   };
 
@@ -83,6 +94,17 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-bg-dark-card to-bg-dark">
+      <LevelUpModal
+        show={showLevelUp}
+        oldLevel={levelUpData.oldLevel}
+        newLevel={levelUpData.newLevel}
+        onClose={() => setShowLevelUp(false)}
+      />
+      
+      <AchievementNotification
+        achievement={achievement}
+        onClose={() => setAchievement(null)}
+      />
       {/* Header */}
       <header className="border-b border-white/10 bg-bg-dark-card/50 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
