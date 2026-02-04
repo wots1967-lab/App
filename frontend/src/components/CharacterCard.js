@@ -53,6 +53,28 @@ const CharacterCard = () => {
                 </div>
               </div>
 
+              {/* HP Bar */}
+              <div className="space-y-1 mb-3">
+                <div className="flex justify-between text-xs text-text-dark-secondary">
+                  <span>Здоров'я</span>
+                  <span data-testid="hp-display">
+                    {hp} / {maxHp} HP
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <motion.div
+                    className={`h-full rounded-full ${
+                      hpPercentage > 50 ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                      hpPercentage > 25 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
+                      'bg-gradient-to-r from-red-500 to-red-600'
+                    }`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${hpPercentage}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+              </div>
+
               {/* XP Bar */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-text-dark-secondary">
