@@ -417,7 +417,8 @@ async def create_task(task_data: TaskCreate, current_user: dict = Depends(get_cu
     rewards = {
         "easy": {"xp": 15, "coins": 10},
         "medium": {"xp": 35, "coins": 25},
-        "hard": {"xp": 75, "coins": 50}
+        "hard": {"xp": 75, "coins": 50},
+        "very_hard": {"xp": 150, "coins": 100}
     }
     reward = rewards.get(task_data.difficulty, rewards["medium"])
     
