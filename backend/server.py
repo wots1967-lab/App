@@ -119,6 +119,8 @@ async def check_and_unlock_achievements(user_id: str):
                     }}
                 )
                 
+                # Remove MongoDB _id before returning
+                achievement.pop('_id', None)
                 unlocked.append(achievement)
     
     return unlocked
