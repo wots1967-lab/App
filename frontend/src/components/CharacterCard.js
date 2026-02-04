@@ -82,6 +82,27 @@ const CharacterCard = () => {
                   </span>
                 </motion.div>
               )}
+
+              {/* Unlock message at level 3 */}
+              {character.level === 2 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-3 text-xs text-accent-gold text-center bg-accent-gold/10 rounded px-2 py-1"
+                >
+                  🔓 Ще 1 рівень до розблокування всіх функцій!
+                </motion.div>
+              )}
+              
+              {character.level === 3 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mt-3 text-xs text-secondary-main text-center bg-secondary-main/10 rounded px-2 py-1 font-bold"
+                >
+                  ✨ Всі функції розблоковано!
+                </motion.div>
+              )}
             </div>
           </div>
         </CardContent>
