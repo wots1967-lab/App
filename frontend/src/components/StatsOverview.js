@@ -13,8 +13,11 @@ const StatsOverview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    if (token) {
+      fetchStats();
+    }
+    // eslint-disable-next-line
+  }, [token]);
 
   const fetchStats = async () => {
     try {
