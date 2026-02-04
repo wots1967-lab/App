@@ -142,30 +142,84 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Column - Character & Quick Add */}
-          <div className="lg:col-span-4 space-y-6">
-            <CharacterCard />
-            <QuickAddTask onTaskAdded={fetchTasks} />
-            <StatsOverview />
-          </div>
+        <Tabs defaultValue="tasks" className="space-y-6">
+          <TabsList className="bg-bg-dark-card border border-white/10">
+            <TabsTrigger value="tasks" data-testid="tasks-tab">Завдання</TabsTrigger>
+            <TabsTrigger value="habits" disabled={!isUnlocked} data-testid="habits-tab">
+              Звички {!isUnlocked && <Lock size={14} className="ml-1" />}
+            </TabsTrigger>
+            <TabsTrigger value="quests" disabled={!isUnlocked} data-testid="quests-tab">
+              Квести {!isUnlocked && <Lock size={14} className="ml-1" />}
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Right Column - Tasks */}
-          <div className="lg:col-span-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              <TaskList
-                tasks={todayTasks}
-                loading={loading}
-                onTaskComplete={handleTaskComplete}
-                onTaskDelete={handleTaskDelete}
-              />
-            </motion.div>
-          </div>
-        </div>
+          <TabsContent value="tasks">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-4 space-y-6">
+                <CharacterCard />
+                <CharacterStats />
+                <QuickAddTask onTaskAdded={fetchTasks} />
+                <StatsOverview />
+                {isUnlocked && <SkillsOverview />}
+              </div>
+
+              <div className="lg:col-span-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <TaskList
+                    tasks={todayTasks}
+                    loading={loading}
+                    onTaskComplete={handleTaskComplete}
+                    onTaskDelete={handleTaskDelete}
+                  />
+                </motion.div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="habits">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-4 space-y-6">
+                <CharacterCard />
+                <SkillsOverview />
+              </div>
+              <div className="lg:col-span-8">
+                <HabitsManager />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="quests">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-4 space-y-6">
+                <CharacterCard />
+                <SkillsOverview />
+              </div>
+              <div className="lg:col-span-8">
+                <QuestsManager />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {!isUnlocked && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 bg-gradient-to-r from-primary-main/20 to-primary-dark/20 border border-primary-main/50 rounded-lg p-6 text-center"
+          >
+            <Lock size={40} className="mx-auto mb-3 text-primary-main" />
+            <h3 className="text-xl font-bold text-text-dark-primary mb-2">
+              Розблокуйте більше функцій!
+            </h3>
+            <p className="text-text-dark-secondary">
+              Досягніть <span className="text-primary-main font-bold">3-го рівня</span>, щоб розблокувати Звички, Квести, Навички, Досягнення та багато іншого!
+            </p>
+          </motion.div>
+        )}
       </main>
     </div>
   );
