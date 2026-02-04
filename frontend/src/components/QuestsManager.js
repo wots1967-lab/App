@@ -149,45 +149,48 @@ const QuestsManager = () => {
         ) : quests.length === 0 ? (
           <div className="text-center py-8 text-text-dark-secondary">Немає квестів</div>
         ) : (
-          quests.filter(q => !q.completed).map((quest) => {
-            const progress = (quest.currentStep / quest.steps.length) * 100;
-            return (
-              <motion.div key={quest.id} className="group" data-testid={`quest-${quest.id}`}>
-                <div className="bg-bg-dark border border-white/10 rounded-lg p-4 hover:border-primary-main/50 transition-colors">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="text-text-dark-primary font-bold mb-1">{quest.title}</h3>
-                      <p className="text-sm text-text-dark-secondary">Крок {quest.currentStep + 1} / {quest.steps.length}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteQuest(quest.id)}
-                      className="opacity-0 group-hover:opacity-100 text-red-400"
-                      data-testid={`delete-quest-${quest.id}`}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                  <Progress value={progress} className="mb-3" />
-                  {quest.currentStep < quest.steps.length && (
-                    <div className="bg-bg-dark-card p-3 rounded-lg mb-2">
-                      <p className="text-text-dark-primary text-sm mb-2">{quest.steps[quest.currentStep].title}</p>
+          (() => {
+            const activeQuests = quests.filter(q => !q.completed);
+            return activeQuests.map((quest) => {
+              const progress = (quest.currentStep / quest.steps.length) * 100;
+              return (
+                <motion.div key={quest.id} className="group" data-testid={`quest-${quest.id}`}>
+                  <div className="bg-bg-dark border border-white/10 rounded-lg p-4 hover:border-primary-main/50 transition-colors">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="text-text-dark-primary font-bold mb-1">{quest.title}</h3>
+                        <p className="text-sm text-text-dark-secondary">Крок {quest.currentStep + 1} / {quest.steps.length}</p>
+                      </div>
                       <Button
-                        size="sm"
-                        onClick={() => handleCompleteStep(quest.id)}
-                        className="bg-gradient-to-r from-secondary-main to-green-600"
-                        data-testid={`complete-quest-step-${quest.id}`}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteQuest(quest.id)}
+                        className="opacity-0 group-hover:opacity-100 text-red-400"
+                        data-testid={`delete-quest-${quest.id}`}
                       >
-                        <CheckCircle2 size={16} className="mr-1" />
-                        Виконати крок
+                        <Trash2 size={16} />
                       </Button>
                     </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })
+                    <Progress value={progress} className="mb-3" />
+                    {quest.currentStep < quest.steps.length && (
+                      <div className="bg-bg-dark-card p-3 rounded-lg mb-2">
+                        <p className="text-text-dark-primary text-sm mb-2">{quest.steps[quest.currentStep].title}</p>
+                        <Button
+                          size="sm"
+                          onClick={() => handleCompleteStep(quest.id)}
+                          className="bg-gradient-to-r from-secondary-main to-green-600"
+                          data-testid={`complete-quest-step-${quest.id}`}
+                        >
+                          <CheckCircle2 size={16} className="mr-1" />
+                          Виконати крок
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            });
+          })()
         )}
       </CardContent>
     </Card>
