@@ -6,6 +6,7 @@ import { Toaster } from './components/ui/sonner';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import ProfilePage from './components/ProfilePage';
+import FriendsPage from './components/FriendsPage';
 import '@/App.css';
 
 const ProtectedRoute = ({ children }) => {
