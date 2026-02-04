@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from './components/ui/sonner';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
+import ProfilePage from './components/ProfilePage';
 import '@/App.css';
 
 const ProtectedRoute = ({ children }) => {
