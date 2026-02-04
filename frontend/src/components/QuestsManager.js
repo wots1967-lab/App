@@ -152,6 +152,16 @@ const QuestsManager = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Motivational message always visible */}
+        <div className="bg-primary-main/10 border border-primary-main/30 rounded-lg p-4 mb-4">
+          <p className="text-base text-text-dark-primary mb-1 font-medium">
+            Створюй свої квести, виставляй унікальні винагороди, запрошуй друзів.
+          </p>
+          <p className="text-sm text-text-dark-secondary">
+            Зроби з великих цілей справжні пригоди.
+          </p>
+        </div>
+
         {showAdd && (
           <form onSubmit={handleAddQuest} className="space-y-3 p-4 bg-bg-dark rounded-lg border border-white/10">
             <Input
