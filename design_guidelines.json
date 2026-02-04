@@ -1,0 +1,218 @@
+{
+  "typography": {
+    "font_family": {
+      "headings": "Exo 2, sans-serif",
+      "body": "Rubik, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "bold": 700,
+      "black": 900
+    },
+    "sizes": {
+      "h1": "text-4xl md:text-6xl tracking-tight",
+      "h2": "text-3xl md:text-4xl tracking-tight",
+      "h3": "text-2xl md:text-3xl",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm leading-snug",
+      "tiny": "text-xs tracking-wider uppercase"
+    },
+    "instructions": "Use 'Exo 2' for all headings to give a sci-fi/tech RPG feel. Use 'Rubik' for body text for readability and a friendly, modern touch. Ensure fonts support Cyrillic characters for Ukrainian localization."
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "main": "#6C63FF",
+        "dark": "#4834DF",
+        "gradient": "linear-gradient(135deg, #6C63FF 0%, #4834DF 100%)",
+        "glow": "0 0 20px rgba(108, 99, 255, 0.5)"
+      },
+      "secondary": {
+        "main": "#2ECC71",
+        "gradient": "linear-gradient(135deg, #2ECC71 0%, #27AE60 100%)"
+      },
+      "accent": {
+        "gold": "#FFD700",
+        "gold_gradient": "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
+        "orange": "#F39C12",
+        "red": "#E74C3C"
+      },
+      "background": {
+        "dark": "#0B0C15",
+        "dark_card": "#151621",
+        "light": "#F4F6F8",
+        "light_card": "#FFFFFF"
+      },
+      "text": {
+        "dark_primary": "#FFFFFF",
+        "dark_secondary": "#A0AEC0",
+        "light_primary": "#1A202C",
+        "light_secondary": "#718096"
+      }
+    },
+    "usage": {
+      "xp_bar": "Use 'gold_gradient' for XP bars.",
+      "health_bar": "Use 'red' for health or danger zones.",
+      "mana_bar": "Use 'primary.gradient' for mana or main action buttons.",
+      "success": "Use 'secondary.main' for completed quests and success states."
+    }
+  },
+  "visual_enhancers": {
+    "borders": {
+      "default": "1px solid rgba(255, 255, 255, 0.1)",
+      "active": "1px solid #6C63FF",
+      "glass": "1px solid rgba(255, 255, 255, 0.05)"
+    },
+    "shadows": {
+      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      "glow": "0 0 15px rgba(108, 99, 255, 0.3)",
+      "neon": "0 0 5px #6C63FF, 0 0 10px #6C63FF, 0 0 20px #6C63FF"
+    },
+    "glassmorphism": {
+      "heavy": "backdrop-filter: blur(16px) saturate(180%); background-color: rgba(21, 22, 33, 0.7);",
+      "light": "backdrop-filter: blur(8px); background-color: rgba(255, 255, 255, 0.1);"
+    },
+    "radius": {
+      "default": "0.75rem",
+      "pill": "9999px",
+      "sharp": "0px"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-gradient-to-r from-[#6C63FF] to-[#4834DF] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-[0_0_20px_rgba(108,99,255,0.5)] transition-all duration-300 transform hover:-translate-y-1 active:scale-95",
+      "secondary": "bg-transparent border-2 border-[#6C63FF] text-[#6C63FF] font-bold py-2 px-6 rounded-lg hover:bg-[#6C63FF] hover:text-white transition-all duration-300",
+      "ghost": "bg-transparent text-gray-400 hover:text-white hover:bg-white/5 py-2 px-4 rounded-lg transition-colors"
+    },
+    "cards": {
+      "quest": "bg-[#151621]/80 backdrop-blur-md border border-white/10 rounded-xl p-6 hover:border-[#6C63FF]/50 transition-colors duration-300 relative overflow-hidden group",
+      "stat": "bg-gradient-to-br from-[#1A1B26] to-[#151621] border border-white/5 rounded-2xl p-5 shadow-xl"
+    },
+    "inputs": {
+      "default": "bg-[#0B0C15] border border-white/10 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-[#6C63FF] focus:ring-1 focus:ring-[#6C63FF] transition-all placeholder-gray-600"
+    },
+    "progress_bars": {
+      "container": "h-3 w-full bg-gray-800 rounded-full overflow-hidden",
+      "fill": "h-full rounded-full transition-all duration-1000 ease-out"
+    }
+  },
+  "layout": {
+    "grid_system": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "bento": "grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]"
+    },
+    "spacing": {
+      "section": "py-12 md:py-20",
+      "container": "px-4 md:px-8 max-w-7xl mx-auto"
+    }
+  },
+  "motion": {
+    "variants": {
+      "fadeIn": {
+        "initial": { "opacity": 0, "y": 20 },
+        "animate": { "opacity": 1, "y": 0 },
+        "transition": { "duration": 0.5, "ease": "easeOut" }
+      },
+      "staggerContainer": {
+        "animate": { "transition": { "staggerChildren": 0.1 } }
+      },
+      "scaleIn": {
+        "initial": { "scale": 0.9, "opacity": 0 },
+        "animate": { "scale": 1, "opacity": 1 },
+        "transition": { "type": "spring", "stiffness": 300, "damping": 20 }
+      },
+      "hoverCard": {
+        "whileHover": { "y": -5, "transition": { "duration": 0.2 } }
+      }
+    },
+    "instructions": "Use Framer Motion for all entrance animations. Apply 'staggerContainer' to lists (quests, inventory). Use 'scaleIn' for modals and achievement popups."
+  },
+  "assets": {
+    "avatars": [
+      {
+        "url": "https://images.unsplash.com/photo-1743247299142-8f1c919776c4?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "category": "avatar_male",
+        "description": "Minimalist 3D sculpted head, artistic"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1728218948405-d749e7d1851e?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "category": "avatar_male_real",
+        "description": "Black and white portrait, moody"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1662250274574-7c0a393cda54?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "category": "avatar_male_glasses",
+        "description": "Bald man with glasses, character style"
+      }
+    ],
+    "icons": {
+      "skills": [
+        {
+          "url": "https://images.unsplash.com/photo-1737908820885-f5acf114722a?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "skill_magic",
+          "description": "Abstract circular halo, good for magic/intellect"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1730692504752-c411cf0306ac?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "skill_crafting",
+          "description": "Abstract shapes, good for creativity/crafting"
+        }
+      ],
+      "currency": [
+        {
+          "url": "https://images.unsplash.com/photo-1708714290523-e9f76878bf53?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "coin_gold",
+          "description": "Single gold coin close up"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1643823062962-36e5ac74c868?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "coins_pile",
+          "description": "Pile of gold coins"
+        }
+      ]
+    },
+    "backgrounds": [
+      {
+        "url": "https://images.unsplash.com/photo-1736325263301-488931888151?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "category": "bg_dark_cubes",
+        "description": "Dark geometric cubes, subtle gaming background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1693344047149-2eefd915ddfc?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "category": "bg_abstract_clock",
+        "description": "Abstract time/clock concept, good for productivity"
+      }
+    ]
+  },
+  "instructions_to_main_agent": {
+    "general": "You are building a Gamified Task Manager. The UI must feel like a modern RPG HUD but remain functional as a dashboard. Do not use standard 'Bootstrap' layouts. Use the 'Bento' grid system.",
+    "theme_implementation": "Implement a 'theme-toggle' that switches between the Dark (Gaming/Night Mode) and Light (Productivity/Day Mode) palettes defined above. Default to Dark Mode.",
+    "localization": "All text MUST be in Ukrainian. Ensure the 'Exo 2' and 'Rubik' fonts are loaded with Cyrillic subsets.",
+    "gamification_ui": "Every task completion must feel rewarding. Use the 'gold_gradient' for XP gains. When a user levels up, use a full-screen overlay with 'glassmorphism.heavy'.",
+    "components": "Use Shadcn/UI components as a base but override their styles with the 'components' rules defined here. Specifically, remove default white backgrounds from cards and use the glassmorphism styles.",
+    "testing": "Add 'data-testid' to all interactive elements (buttons, inputs, quest cards) for testing."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
