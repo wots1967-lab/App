@@ -836,6 +836,153 @@ async def complete_daily_challenge(current_user: dict = Depends(get_current_user
     
     raise HTTPException(status_code=400, detail="Challenge not completed yet")
 
+# --- Profile Routes ---
+@api_router.post("/user/profile")
+async def update_profile(req: UpdateProfileRequest, current_user: dict = Depends(get_current_user)):
+    update_data = {}
+    if req.age is not None:
+        update_data["character.age"] = req.age
+    if req.bio is not None:
+        update_data["character.bio"] = req.bio
+    if req.globalGoals is not None:
+        update_data["character.globalGoals"] = req.globalGoals
+    
+    if update_data:
+        await db.users.update_one(
+            {"id": current_user['id']},
+            {"$set": update_data}
+        )
+    
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    user.pop('passwordHash', None)
+    return user
+
+# --- Shop/Items Routes ---
+@api_router.get("/shop/items")
+async def get_shop_items():
+    items = [
+        {"id": "xp_boost", "name": "Зачарований амулет", "description": "Підсилює отримання досвіду на 50%", "type": "boost", "effect": "xp", "effectValue": 50, "price": 500, "icon": "✨"},
+        {"id": "coin_boost", "name": "Золота зброя", "description": "Підсилює монети на 15%", "type": "boost", "effect": "coins", "effectValue": 15, "price": 300, "icon": "⚔️"},
+        {"id": "hp_restore", "name": "Зілля здоров'я", "description": "Відновлює 50 HP", "type": "consumable", "effect": "hp", "effectValue": 50, "price": 200, "icon": "🧪"},
+        {"id": "streak_protect", "name": "Щит захисту", "description": "Захищає серію від розриву", "type": "protection", "effect": "streak", "effectValue": 1, "price": 400, "icon": "🛡️"},
+    ]
+    return items
+
+@api_router.post("/shop/purchase/{item_id}")
+async def purchase_item(item_id: str, current_user: dict = Depends(get_current_user)):
+    # Get item details
+    items_map = {
+        "xp_boost": {"price": 500, "name": "Зачарований амулет"},
+        "coin_boost": {"price": 300, "name": "Золота зброя"},
+        "hp_restore": {"price": 200, "name": "Зілля здоров'я"},
+        "streak_protect": {"price": 400, "name": "Щит захисту"},
+    }
+    
+    if item_id not in items_map:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    item = items_map[item_id]
+    
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    if user['character']['coins'] < item['price']:
+        raise HTTPException(status_code=400, detail="Not enough coins")
+    
+    user['character']['coins'] -= item['price']
+    
+    # Add item to inventory
+    if 'inventory' not in user:
+        user['inventory'] = []
+    user['inventory'].append(item_id)
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {"character.coins": user['character']['coins'], "inventory": user['inventory']}}
+    )
+    
+    return {"message": f"{item['name']} purchased!", "character": user['character']}
+
+@api_router.post("/user/equip/{item_id}")
+async def equip_item(item_id: str, current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    
+    if item_id not in user.get('inventory', []):
+        raise HTTPException(status_code=400, detail="Item not in inventory")
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {"character.equippedItem": item_id}}
+    )
+    
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    return {"character": user['character']}
+
+# --- Friends Routes ---
+@api_router.post("/friends/add")
+async def add_friend(req: AddFriendRequest, current_user: dict = Depends(get_current_user)):
+    # Find friend by email
+    friend = await db.users.find_one({"email": req.friendEmail}, {"_id": 0})
+    if not friend:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if friend['id'] == current_user['id']:
+        raise HTTPException(status_code=400, detail="Cannot add yourself as friend")
+    
+    # Check if already friends
+    existing = await db.friends.find_one({
+        "userId": current_user['id'],
+        "friendId": friend['id']
+    }, {"_id": 0})
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Already friends or request pending")
+    
+    # Create friend request
+    friend_record = Friend(
+        userId=current_user['id'],
+        friendId=friend['id'],
+        friendEmail=friend['email'],
+        friendName=friend['character']['name']
+    )
+    
+    friend_dict = friend_record.model_dump()
+    friend_dict['createdAt'] = friend_dict['createdAt'].isoformat()
+    await db.friends.insert_one(friend_dict)
+    
+    return friend_record
+
+@api_router.get("/friends")
+async def get_friends(current_user: dict = Depends(get_current_user)):
+    friends = await db.friends.find({
+        "userId": current_user['id'],
+        "status": "accepted"
+    }, {"_id": 0}).to_list(100)
+    return friends
+
+@api_router.post("/friends/{friend_id}/accept")
+async def accept_friend(friend_id: str, current_user: dict = Depends(get_current_user)):
+    await db.friends.update_one(
+        {"id": friend_id, "friendId": current_user['id']},
+        {"$set": {"status": "accepted"}}
+    )
+    return {"message": "Friend request accepted"}
+
+# --- Archive Routes ---
+@api_router.get("/tasks/archive")
+async def get_archived_tasks(current_user: dict = Depends(get_current_user)):
+    tasks = await db.tasks.find({
+        "userId": current_user['id'],
+        "completed": True
+    }, {"_id": 0}).sort("completedAt", -1).to_list(1000)
+    return tasks
+
+@api_router.get("/quests/archive")
+async def get_archived_quests(current_user: dict = Depends(get_current_user)):
+    quests = await db.quests.find({
+        "userId": current_user['id'],
+        "completed": True
+    }, {"_id": 0}).to_list(1000)
+    return quests
+
 # --- Leaderboard Routes ---
 @api_router.get("/leaderboards/{board_type}")
 async def get_leaderboard(board_type: str):
