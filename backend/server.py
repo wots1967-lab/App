@@ -234,6 +234,7 @@ class Habit(BaseModel):
     userId: str
     name: str
     description: str = ""
+    type: str = "good"
     frequency: str = "daily"
     streak: int = 0
     bestStreak: int = 0
@@ -246,6 +247,7 @@ class Habit(BaseModel):
 class HabitCreate(BaseModel):
     name: str
     description: str = ""
+    type: str = "good"
     frequency: str = "daily"
 
 class QuestStep(BaseModel):
