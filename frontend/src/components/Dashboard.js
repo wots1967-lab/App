@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CharacterCard from './CharacterCard';
+import CharacterStats from './CharacterStats';
 import TaskList from './TaskList';
 import QuickAddTask from './QuickAddTask';
 import StatsOverview from './StatsOverview';
+import HabitsManager from './HabitsManager';
+import QuestsManager from './QuestsManager';
+import SkillsOverview from './SkillsOverview';
+import LevelUpModal from './LevelUpModal';
+import AchievementNotification from './AchievementNotification';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Button } from './ui/button';
-import { LogOut, Moon, Sun, User } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { LogOut, Moon, Sun, User, Lock } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
