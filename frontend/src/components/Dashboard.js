@@ -202,9 +202,7 @@ const Dashboard = () => {
                 <SkillsOverview />
               </div>
               <div className="lg:col-span-8">
-                <div className="text-center py-8 text-text-dark-secondary">
-                  Квести тимчасово недоступні (в розробці)
-                </div>
+                <QuestsManager />
               </div>
             </div>
           </TabsContent>
