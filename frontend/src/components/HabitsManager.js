@@ -17,7 +17,7 @@ const HabitsManager = () => {
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
-  const [newHabit, setNewHabit] = useState({ name: '', description: '' });
+  const [newHabit, setNewHabit] = useState({ name: '', description: '', type: 'good' });
 
   useEffect(() => {
     if (token) {
