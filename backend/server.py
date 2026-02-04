@@ -186,6 +186,12 @@ class Character(BaseModel):
     availableStatPoints: int = 0
     avatar: str = ""
     title: str = "Новачок"
+    hp: int = 100
+    maxHp: int = 100
+    equippedItem: Optional[str] = None
+    age: Optional[int] = None
+    bio: str = ""
+    globalGoals: List[str] = Field(default_factory=list)
 
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
