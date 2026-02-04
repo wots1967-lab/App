@@ -509,6 +509,7 @@ async def create_habit(habit_data: HabitCreate, current_user: dict = Depends(get
         userId=current_user['id'],
         name=habit_data.name,
         description=habit_data.description,
+        type=habit_data.type,
         frequency=habit_data.frequency
     )
     
