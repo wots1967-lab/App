@@ -217,6 +217,7 @@ const HabitsManager = () => {
                                   Шкідлива
                                 </span>
                               )}
+                            </div>
                             {habit.description && (
                               <p className="text-sm text-text-dark-secondary mb-2">
                                 {habit.description}
