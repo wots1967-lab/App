@@ -51,7 +51,7 @@ const HabitsManager = () => {
       );
       
       toast.success('Звичку додано!');
-      setNewHabit({ name: '', description: '' });
+      setNewHabit({ name: '', description: '', type: 'good' });
       setShowAdd(false);
       fetchHabits();
     } catch (error) {
