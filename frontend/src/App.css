@@ -92,6 +92,30 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-light-primary);
 }
 
+.light .bg-gradient-to-br.from-bg-dark {
+  background: linear-gradient(to bottom right, #F4F6F8, #E2E8F0, #F4F6F8);
+}
+
+.light .bg-bg-dark-card {
+  background-color: #FFFFFF;
+}
+
+.light .bg-bg-dark {
+  background-color: #F4F6F8;
+}
+
+.light .text-text-dark-primary {
+  color: #1A202C;
+}
+
+.light .text-text-dark-secondary {
+  color: #718096;
+}
+
+.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
