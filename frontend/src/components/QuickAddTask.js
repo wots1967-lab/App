@@ -15,6 +15,8 @@ const QuickAddTask = ({ onTaskAdded }) => {
   const { token } = useAuth();
   const [title, setTitle] = useState('');
   const [difficulty, setDifficulty] = useState('medium');
+  const [tags, setTags] = useState([]);
+  const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -30,6 +32,7 @@ const QuickAddTask = ({ onTaskAdded }) => {
           type: 'daily',
           difficulty,
           skills: [],
+          tags,
           priority: 'medium'
         },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -38,12 +41,20 @@ const QuickAddTask = ({ onTaskAdded }) => {
       toast.success('Завдання додано!');
       setTitle('');
       setDifficulty('medium');
+      setTags([]);
       if (onTaskAdded) onTaskAdded();
     } catch (error) {
       toast.error('Помилка при додаванні завдання');
       console.error('Failed to add task:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setTags([...tags, newTag.trim()]);
+      setNewTag('');
     }
   };
 
