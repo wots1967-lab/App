@@ -25,8 +25,11 @@ const QuestsManager = () => {
   });
 
   useEffect(() => {
-    fetchQuests();
-  }, []);
+    if (token) {
+      fetchQuests();
+    }
+    // eslint-disable-next-line
+  }, [token]);
 
   const fetchQuests = async () => {
     try {
