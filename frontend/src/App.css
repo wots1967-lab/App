@@ -65,55 +65,73 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Light theme */
 .light {
-  --background: #F4F6F8;
+  --background: #FFFFFF;
   --foreground: #1A202C;
-  --card: #FFFFFF;
+  --card: #F8F9FA;
   --card-foreground: #1A202C;
   --popover: #FFFFFF;
   --popover-foreground: #1A202C;
-  --primary: #6C63FF;
+  --primary: #5B52E8;
   --primary-foreground: #FFFFFF;
-  --secondary: #2ECC71;
+  --secondary: #27AE60;
   --secondary-foreground: #FFFFFF;
-  --muted: #E2E8F0;
-  --muted-foreground: #718096;
-  --accent: #FFD700;
+  --muted: #E9ECEF;
+  --muted-foreground: #495057;
+  --accent: #F59E0B;
   --accent-foreground: #1A202C;
-  --destructive: #E74C3C;
+  --destructive: #DC3545;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(0, 0, 0, 0.15);
   --input: rgba(0, 0, 0, 0.1);
-  --ring: #6C63FF;
+  --ring: #5B52E8;
   --radius: 0.75rem;
 }
 
 .light body {
-  background-color: var(--bg-light);
-  color: var(--text-light-primary);
-}
-
-.light .bg-gradient-to-br.from-bg-dark {
-  background: linear-gradient(to bottom right, #F4F6F8, #E2E8F0, #F4F6F8);
-}
-
-.light .bg-bg-dark-card {
-  background-color: #FFFFFF;
-}
-
-.light .bg-bg-dark {
-  background-color: #F4F6F8;
-}
-
-.light .text-text-dark-primary {
+  background: linear-gradient(to bottom right, #F8F9FA, #E9ECEF);
   color: #1A202C;
 }
 
+.light .bg-gradient-to-br.from-bg-dark {
+  background: linear-gradient(to bottom right, #FFFFFF, #F8F9FA, #E9ECEF);
+}
+
+.light .bg-bg-dark-card {
+  background-color: #F8F9FA;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light .bg-bg-dark {
+  background-color: #FFFFFF;
+}
+
+.light .text-text-dark-primary {
+  color: #1A202C !important;
+}
+
 .light .text-text-dark-secondary {
-  color: #718096;
+  color: #495057 !important;
 }
 
 .light .border-white\/10 {
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.light .text-primary-main {
+  color: #5B52E8 !important;
+}
+
+.light .bg-primary-main {
+  background-color: #5B52E8 !important;
+}
+
+.light .from-primary-main {
+  --tw-gradient-from: #5B52E8 !important;
 }
 
 /* Custom scrollbar */
