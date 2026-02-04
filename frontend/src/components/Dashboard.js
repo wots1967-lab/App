@@ -33,8 +33,11 @@ const Dashboard = () => {
   const isUnlocked = user?.character?.level >= 3;
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (token) {
+      fetchTasks();
+    }
+    // eslint-disable-next-line
+  }, [token]);
 
   const fetchTasks = async () => {
     try {
