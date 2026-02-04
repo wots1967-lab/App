@@ -193,7 +193,9 @@ const HabitsManager = () => {
                   className="group"
                   data-testid={`habit-${habit.id}`}
                 >
-                  <div className="bg-bg-dark border border-white/10 rounded-lg p-4 hover:border-primary-main/50 transition-colors">
+                  <div className={`bg-bg-dark border rounded-lg p-4 hover:border-primary-main/50 transition-colors ${
+                    habit.type === 'bad' ? 'border-accent-red/30' : 'border-white/10'
+                  }`}>
                     <div className="flex items-start gap-4">
                       <Checkbox
                         checked={completedToday}
@@ -206,9 +208,15 @@ const HabitsManager = () => {
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <h3 className="text-text-dark-primary font-medium mb-1">
-                              {habit.name}
-                            </h3>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-text-dark-primary font-medium">
+                                {habit.name}
+                              </h3>
+                              {habit.type === 'bad' && (
+                                <span className="text-xs bg-accent-red/20 text-accent-red px-2 py-0.5 rounded-full">
+                                  Шкідлива
+                                </span>
+                              )}
                             {habit.description && (
                               <p className="text-sm text-text-dark-secondary mb-2">
                                 {habit.description}
