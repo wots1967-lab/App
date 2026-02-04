@@ -141,6 +141,30 @@ const HabitsManager = () => {
               onChange={(e) => setNewHabit({ ...newHabit, description: e.target.value })}
               className="bg-bg-dark-card border-white/10 text-white"
             />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setNewHabit({ ...newHabit, type: 'good' })}
+                className={`flex-1 py-2 px-4 rounded-lg border transition-colors ${
+                  newHabit.type === 'good'
+                    ? 'bg-secondary-main text-white border-secondary-main'
+                    : 'bg-bg-dark-card text-text-dark-secondary border-white/10'
+                }`}
+              >
+                ✓ Корисна
+              </button>
+              <button
+                type="button"
+                onClick={() => setNewHabit({ ...newHabit, type: 'bad' })}
+                className={`flex-1 py-2 px-4 rounded-lg border transition-colors ${
+                  newHabit.type === 'bad'
+                    ? 'bg-accent-red text-white border-accent-red'
+                    : 'bg-bg-dark-card text-text-dark-secondary border-white/10'
+                }`}
+              >
+                ✗ Шкідлива
+              </button>
+            </div>
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary-main to-primary-dark"
