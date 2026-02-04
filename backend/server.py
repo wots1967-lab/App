@@ -923,6 +923,20 @@ async def equip_item(item_id: str, current_user: dict = Depends(get_current_user
     user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
     return {"character": user['character']}
 
+@api_router.get("/user/inventory")
+async def get_inventory(current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    inventory = user.get('inventory', [])
+    
+    # Get item details
+    all_items = await get_shop_items()
+    inventory_items = [item for item in all_items if item['id'] in inventory]
+    
+    return {
+        "inventory": inventory_items,
+        "equippedItem": user['character'].get('equippedItem')
+    }
+
 # --- Friends Routes ---
 @api_router.post("/friends/add")
 async def add_friend(req: AddFriendRequest, current_user: dict = Depends(get_current_user)):
