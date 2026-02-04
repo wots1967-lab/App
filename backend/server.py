@@ -431,6 +431,7 @@ async def create_task(task_data: TaskCreate, current_user: dict = Depends(get_cu
         xpReward=reward['xp'],
         coinReward=reward['coins'],
         skills=task_data.skills,
+        tags=task_data.tags,
         priority=task_data.priority,
         dueDate=task_data.dueDate
     )
