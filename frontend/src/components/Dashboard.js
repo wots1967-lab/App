@@ -9,6 +9,7 @@ import HabitsManager from './HabitsManager';
 import QuestsManager from './QuestsManager';
 import SkillsOverview from './SkillsOverview';
 import ShopPage from './ShopPage';
+import RewardsPage from './RewardsPage';
 import LevelUpModal from './LevelUpModal';
 import AchievementNotification from './AchievementNotification';
 import EquipmentMenu from './EquipmentMenu';
