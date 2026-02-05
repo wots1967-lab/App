@@ -172,6 +172,12 @@ const QuestsManager = () => {
               className="bg-bg-dark-card border-white/10 text-white"
               data-testid="quest-title-input"
             />
+            <Input
+              placeholder="Винагорода за квест..."
+              value={newQuest.reward}
+              onChange={(e) => setNewQuest({ ...newQuest, reward: e.target.value })}
+              className="bg-bg-dark-card border-white/10 text-white"
+            />
             {newQuest.steps.map((step, idx) => (
               <Input
                 key={idx}
