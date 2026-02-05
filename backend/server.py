@@ -1125,7 +1125,7 @@ async def purchase_reward(reward_id: str, current_user: dict = Depends(get_curre
     
     await db.rewards.update_one(
         {"id": reward_id},
-        {"$set": {"purchased": True}}
+        {"$set": {"purchased": True, "purchasedAt": datetime.now(timezone.utc).isoformat()}}
     )
     
     return {"message": "Reward purchased!", "character": user['character']}
