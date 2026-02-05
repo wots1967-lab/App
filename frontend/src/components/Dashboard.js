@@ -95,6 +95,22 @@ const Dashboard = () => {
     }
   };
 
+  const handleTaskUncomplete = async (taskId) => {
+    try {
+      await axios.post(
+        `${API}/tasks/${taskId}/uncomplete`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      toast.success('Виконання скасовано');
+      await fetchTasks();
+    } catch (error) {
+      console.error('Failed to uncomplete task:', error);
+      toast.error('Помилка при скасуванні');
+    }
+  };
+
   const todayTasks = tasks.filter(task => !task.completed);
 
   return (
