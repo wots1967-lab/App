@@ -362,6 +362,30 @@ class GiftRewardRequest(BaseModel):
     rewardId: str
     friendId: str
 
+class Mission(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    title: str
+    description: str = ""
+    slogan: str = ""
+    images: List[str] = Field(default_factory=list)
+    color: str = "purple"
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class MissionCreate(BaseModel):
+    title: str
+    description: str = ""
+    slogan: str = ""
+    images: List[str] = Field(default_factory=list)
+    color: str = "purple"
+
+class MissionUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    slogan: Optional[str] = None
+    images: Optional[List[str]] = None
+    color: Optional[str] = None
+
 # --- Auth Routes ---
 @api_router.post("/auth/register", response_model=AuthResponse)
 async def register(req: RegisterRequest):
