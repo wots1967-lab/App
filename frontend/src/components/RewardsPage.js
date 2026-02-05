@@ -54,18 +54,33 @@ const RewardsPage = () => {
     try {
       await axios.post(
         `${API}/rewards`,
-        newReward,
+        { ...newReward, image: selectedImage },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
       toast.success('Винагороду створено!');
-      setNewReward({ name: '', description: '', requiredLevel: 1, cost: 100 });
+      setNewReward({ name: '', description: '', image: '', requiredLevel: 1, cost: 100 });
+      setSelectedImage('');
       setShowAdd(false);
       fetchRewards();
     } catch (error) {
       toast.error('Помилка');
     }
   };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const availableRewards = rewards.filter(r => !r.purchased);
+  const purchasedRewards = rewards.filter(r => r.purchased);
 
   const handlePurchase = async (rewardId) => {
     try {
