@@ -956,6 +956,21 @@ async def get_inventory(current_user: dict = Depends(get_current_user)):
     }
 
 # --- Friends Routes ---
+@api_router.get("/users/search")
+async def search_user(email: str, current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"email": email}, {"_id": 0, "passwordHash": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "id": user['id'],
+        "email": user['email'],
+        "character": {
+            "name": user['character']['name'],
+            "level": user['character']['level'],
+            "avatar": user['character'].get('avatar', '')
+        }
+    }
+
 @api_router.post("/friends/add")
 async def add_friend(req: AddFriendRequest, current_user: dict = Depends(get_current_user)):
     # Find friend by email
