@@ -1137,6 +1137,79 @@ async def delete_reward(reward_id: str, current_user: dict = Depends(get_current
         raise HTTPException(status_code=404, detail="Reward not found")
     return {"message": "Reward deleted"}
 
+# --- Shared Quests Routes ---
+@api_router.post("/quests/{quest_id}/share")
+async def share_quest(quest_id: str, friend_ids: List[str], current_user: dict = Depends(get_current_user)):
+    quest = await db.quests.find_one({"id": quest_id, "userId": current_user['id']}, {"_id": 0})
+    if not quest:
+        raise HTTPException(status_code=404, detail="Quest not found")
+    
+    shared_quest = SharedQuest(
+        questId=quest_id,
+        ownerId=current_user['id'],
+        participants=friend_ids
+    )
+    
+    shared_dict = shared_quest.model_dump()
+    shared_dict['createdAt'] = shared_dict['createdAt'].isoformat()
+    await db.shared_quests.insert_one(shared_dict)
+    
+    return {"message": "Quest shared!", "sharedQuest": shared_quest}
+
+@api_router.get("/quests/shared")
+async def get_shared_quests(current_user: dict = Depends(get_current_user)):
+    shared = await db.shared_quests.find({
+        "$or": [
+            {"ownerId": current_user['id']},
+            {"participants": current_user['id']}
+        ]
+    }, {"_id": 0}).to_list(100)
+    
+    # Get quest details
+    quest_ids = [s['questId'] for s in shared]
+    quests = await db.quests.find({"id": {"$in": quest_ids}}, {"_id": 0}).to_list(100)
+    
+    for s in shared:
+        s['quest'] = next((q for q in quests if q['id'] == s['questId']), None)
+    
+    return shared
+
+# --- Gift Rewards Routes ---
+@api_router.post("/rewards/gift")
+async def gift_reward(req: GiftRewardRequest, current_user: dict = Depends(get_current_user)):
+    # Check if reward exists and is purchased
+    reward = await db.rewards.find_one({
+        "id": req.rewardId,
+        "userId": current_user['id'],
+        "purchased": True
+    }, {"_id": 0})
+    
+    if not reward:
+        raise HTTPException(status_code=404, detail="Reward not found or not purchased")
+    
+    # Check if friend exists
+    friend = await db.users.find_one({"id": req.friendId}, {"_id": 0})
+    if not friend:
+        raise HTTPException(status_code=404, detail="Friend not found")
+    
+    # Create a copy for the friend
+    gifted_reward = Reward(
+        userId=req.friendId,
+        name=f"🎁 {reward['name']}",
+        description=f"Подарунок від {current_user['character']['name']}. {reward['description']}",
+        image=reward.get('image', ''),
+        requiredLevel=1,
+        cost=0,
+        purchased=True,
+        purchasedAt=datetime.now(timezone.utc).isoformat()
+    )
+    
+    gifted_dict = gifted_reward.model_dump()
+    gifted_dict['createdAt'] = gifted_dict['createdAt'].isoformat()
+    await db.rewards.insert_one(gifted_dict)
+    
+    return {"message": f"Reward gifted to {friend['character']['name']}!"}
+
 # --- Leaderboard Routes ---
 @api_router.get("/leaderboards/{board_type}")
 async def get_leaderboard(board_type: str):
