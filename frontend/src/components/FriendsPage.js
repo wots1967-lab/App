@@ -91,17 +91,41 @@ const FriendsPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAddFriend} className="flex gap-2">
+          <form onSubmit={handleAddFriend} className="space-y-3">
             <Input
               type="email"
               placeholder="Введіть email користувача..."
               value={searchEmail}
-              onChange={(e) => setSearchEmail(e.target.value)}
+              onChange={(e) => handleSearchEmail(e.target.value)}
               className="bg-bg-dark border-white/10 text-white"
             />
-            <Button type="submit" className="bg-gradient-to-r from-primary-main to-primary-dark">
+            
+            {searchResult && (
+              <div className="bg-bg-dark border border-primary-main/50 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  {searchResult.character.avatar ? (
+                    <img 
+                      src={searchResult.character.avatar} 
+                      alt={searchResult.character.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-main to-primary-dark flex items-center justify-center text-white font-bold">
+                      {searchResult.character.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <p className="text-text-dark-primary font-medium">{searchResult.character.name}</p>
+                    <p className="text-sm text-text-dark-secondary">{searchResult.email}</p>
+                    <p className="text-xs text-primary-main">Рівень {searchResult.character.level}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <Button type="submit" className="w-full bg-gradient-to-r from-primary-main to-primary-dark">
               <UserPlus size={16} className="mr-2" />
-              Додати
+              Додати друга
             </Button>
           </form>
         </CardContent>
