@@ -303,7 +303,7 @@ const MissionPage = () => {
           <CardContent className="py-12 text-center">
             <Target size={48} className="mx-auto mb-4 text-text-dark-secondary opacity-50" />
             <p className="text-text-dark-secondary mb-2">Немає карток місії</p>
-            <p className="text-sm text-text-dark-secondary">Створіть першу картку, щоб завжди пам'ятати хто ви і куди рухаєтесь!</p>
+            <p className="text-sm text-text-dark-secondary">Створіть першу картку, щоб завжди памʼятати хто ви і куди рухаєтесь!</p>
           </CardContent>
         </Card>
       ) : (
