@@ -179,6 +179,9 @@ const Dashboard = () => {
             <TabsTrigger value="quests" disabled={!isUnlocked} data-testid="quests-tab">
               Квести {!isUnlocked && <Lock size={14} className="ml-1" />}
             </TabsTrigger>
+            <TabsTrigger value="mission" disabled={!isUnlocked} data-testid="mission-tab">
+              Місія {!isUnlocked && <Lock size={14} className="ml-1" />}
+            </TabsTrigger>
             <TabsTrigger value="rewards" disabled={!isUnlocked} data-testid="rewards-tab">
               Винагороди {!isUnlocked && <Lock size={14} className="ml-1" />}
             </TabsTrigger>
