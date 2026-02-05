@@ -489,10 +489,32 @@ async def complete_task(task_id: str, current_user: dict = Depends(get_current_u
     )
     
     user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
-    user['character']['coins'] += task['coinReward']
+    
+    # Apply mantra effects
+    equipped_item = user['character'].get('equippedItem')
+    xp_multiplier = 1.0
+    coins_multiplier = 1.0
+    stats_multiplier = 1.0
+    
+    if equipped_item:
+        all_items = await get_shop_items()
+        item = next((i for i in all_items if i['id'] == equipped_item), None)
+        if item:
+            if item['effect'] == 'xp':
+                xp_multiplier = 1 + (item['effectValue'] / 100)
+            elif item['effect'] == 'coins':
+                coins_multiplier = 1 + (item['effectValue'] / 100)
+            elif item['effect'] == 'stats':
+                stats_multiplier = 1 + (item['effectValue'] / 100)
+    
+    # Apply rewards with multipliers
+    final_coins = int(task['coinReward'] * coins_multiplier)
+    final_xp = int(task['xpReward'] * xp_multiplier)
+    
+    user['character']['coins'] += final_coins
     
     old_level = user['character']['level']
-    user, leveled_up = add_xp(user, task['xpReward'])
+    user, leveled_up = add_xp(user, final_xp)
     new_level = user['character']['level']
     
     # Add skill XP
