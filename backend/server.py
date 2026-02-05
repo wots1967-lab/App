@@ -1272,6 +1272,62 @@ async def gift_reward(req: GiftRewardRequest, current_user: dict = Depends(get_c
     
     return {"message": f"Reward gifted to {friend['character']['name']}!"}
 
+# --- Mission Routes ---
+@api_router.get("/missions")
+async def get_missions(current_user: dict = Depends(get_current_user)):
+    missions = await db.missions.find({"userId": current_user['id']}, {"_id": 0}).to_list(100)
+    return missions
+
+@api_router.post("/missions")
+async def create_mission(mission_data: MissionCreate, current_user: dict = Depends(get_current_user)):
+    mission = Mission(
+        userId=current_user['id'],
+        title=mission_data.title,
+        description=mission_data.description,
+        slogan=mission_data.slogan,
+        images=mission_data.images[:4],  # Limit to 4 images
+        color=mission_data.color
+    )
+    
+    mission_dict = mission.model_dump()
+    mission_dict['createdAt'] = mission_dict['createdAt'].isoformat()
+    await db.missions.insert_one(mission_dict)
+    return mission
+
+@api_router.put("/missions/{mission_id}")
+async def update_mission(mission_id: str, mission_data: MissionUpdate, current_user: dict = Depends(get_current_user)):
+    mission = await db.missions.find_one({"id": mission_id, "userId": current_user['id']}, {"_id": 0})
+    if not mission:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    
+    update_data = {}
+    if mission_data.title is not None:
+        update_data['title'] = mission_data.title
+    if mission_data.description is not None:
+        update_data['description'] = mission_data.description
+    if mission_data.slogan is not None:
+        update_data['slogan'] = mission_data.slogan
+    if mission_data.images is not None:
+        update_data['images'] = mission_data.images[:4]
+    if mission_data.color is not None:
+        update_data['color'] = mission_data.color
+    
+    if update_data:
+        await db.missions.update_one(
+            {"id": mission_id},
+            {"$set": update_data}
+        )
+    
+    updated_mission = await db.missions.find_one({"id": mission_id}, {"_id": 0})
+    return updated_mission
+
+@api_router.delete("/missions/{mission_id}")
+async def delete_mission(mission_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.missions.delete_one({"id": mission_id, "userId": current_user['id']})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    return {"message": "Mission deleted"}
+
 # --- Leaderboard Routes ---
 @api_router.get("/leaderboards/{board_type}")
 async def get_leaderboard(board_type: str):
