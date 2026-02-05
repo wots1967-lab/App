@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { Shield } from 'lucide-react';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,7 +31,7 @@ const Auth = () => {
           return;
         }
         await register(email, password, characterName);
-        toast.success('Вітаємо у грі!');
+        toast.success('Вітаємо у Братстві!');
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Помилка. Спробуйте ще раз.');
@@ -48,11 +49,16 @@ const Auth = () => {
       >
         <Card className="w-full max-w-md bg-bg-dark-card/80 backdrop-blur-md border-white/10" data-testid="auth-card">
           <CardHeader className="space-y-1">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-main to-primary-dark flex items-center justify-center">
+                <Shield size={32} className="text-white" />
+              </div>
+            </div>
             <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-primary-main to-primary-dark bg-clip-text text-transparent">
-              {isLogin ? 'Вхід' : 'Реєстрація'}
+              Братство
             </CardTitle>
             <CardDescription className="text-center text-text-dark-secondary">
-              {isLogin ? 'Вітаємо назад, герою!' : 'Почніть свою пригоду'}
+              {isLogin ? 'Вітаємо назад, герою!' : 'Приєднуйся до Братства'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -110,7 +116,7 @@ const Auth = () => {
                 disabled={loading}
                 data-testid="submit-button"
               >
-                {loading ? 'Завантаження...' : (isLogin ? 'Увійти' : 'Створити персонажа')}
+                {loading ? 'Завантаження...' : (isLogin ? 'Увійти' : 'Приєднатися до Братства')}
               </Button>
             </form>
             <div className="mt-4 text-center">
