@@ -247,6 +247,13 @@ const RewardsPage = () => {
                   isPurchased ? 'opacity-60' : ''
                 }`}>
                   <CardContent className="p-6">
+                    {reward.image && (
+                      <img 
+                        src={reward.image} 
+                        alt={reward.name}
+                        className="w-full h-40 object-cover rounded-lg mb-4"
+                      />
+                    )}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-text-dark-primary mb-1">{reward.name}</h3>
