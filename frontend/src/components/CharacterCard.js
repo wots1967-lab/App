@@ -28,9 +28,17 @@ const CharacterCard = () => {
           <div className="flex items-center gap-6">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-main to-primary-dark flex items-center justify-center text-4xl font-bold text-white shadow-primary-glow">
-                {character.name.charAt(0).toUpperCase()}
-              </div>
+              {character.avatar ? (
+                <img 
+                  src={character.avatar} 
+                  alt={character.name}
+                  className="w-24 h-24 rounded-full object-cover shadow-primary-glow border-2 border-primary-main"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-main to-primary-dark flex items-center justify-center text-4xl font-bold text-white shadow-primary-glow">
+                  {character.name.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className="absolute -bottom-2 -right-2 bg-accent-gold text-bg-dark text-xs font-bold px-2 py-1 rounded-full shadow-lg">
                 Рівень {character.level}
               </div>
