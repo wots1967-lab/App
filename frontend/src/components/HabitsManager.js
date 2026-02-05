@@ -194,7 +194,7 @@ const HabitsManager = () => {
                   data-testid={`habit-${habit.id}`}
                 >
                   <div className={`bg-bg-dark border rounded-lg p-4 hover:border-primary-main/50 transition-colors ${
-                    habit.type === 'bad' ? 'border-accent-red/30' : 'border-white/10'
+                    habit.type === 'bad' ? 'border-accent-red/30' : 'border-green-500/30'
                   }`}>
                     <div className="flex items-start gap-4">
                       <Checkbox
