@@ -24,7 +24,6 @@ const API = `${BACKEND_URL}/api`;
 
 const Dashboard = () => {
   const { user, token, logout, updateUser } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showLevelUp, setShowLevelUp] = useState(false);
