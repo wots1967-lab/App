@@ -14,6 +14,7 @@ const FriendsPage = () => {
   const { token } = useAuth();
   const [friends, setFriends] = useState([]);
   const [searchEmail, setSearchEmail] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
