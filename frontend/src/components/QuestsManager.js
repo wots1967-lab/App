@@ -63,7 +63,7 @@ const QuestsManager = () => {
       );
       
       toast.success('Квест створено!');
-      setNewQuest({ title: '', description: '', difficulty: 'medium', steps: [{ title: '' }] });
+      setNewQuest({ title: '', description: '', difficulty: 'medium', reward: '', steps: [{ title: '' }] });
       setShowAdd(false);
       fetchQuests();
     } catch (error) {
