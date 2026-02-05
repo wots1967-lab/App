@@ -330,6 +330,22 @@ class Friend(BaseModel):
 class AddFriendRequest(BaseModel):
     friendEmail: EmailStr
 
+class Reward(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    name: str
+    description: str = ""
+    requiredLevel: int = 1
+    cost: int
+    purchased: bool = False
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class RewardCreate(BaseModel):
+    name: str
+    description: str = ""
+    requiredLevel: int = 1
+    cost: int
+
 # --- Auth Routes ---
 @api_router.post("/auth/register", response_model=AuthResponse)
 async def register(req: RegisterRequest):
