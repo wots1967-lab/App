@@ -351,6 +351,17 @@ class RewardCreate(BaseModel):
     requiredLevel: int = 1
     cost: int
 
+class SharedQuest(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    questId: str
+    ownerId: str
+    participants: List[str] = Field(default_factory=list)
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class GiftRewardRequest(BaseModel):
+    rewardId: str
+    friendId: str
+
 # --- Auth Routes ---
 @api_router.post("/auth/register", response_model=AuthResponse)
 async def register(req: RegisterRequest):
