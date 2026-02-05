@@ -17,9 +17,12 @@ const RewardsPage = () => {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
   const [newReward, setNewReward] = useState({
     name: '',
     description: '',
+    image: '',
     requiredLevel: 1,
     cost: 100
   });
