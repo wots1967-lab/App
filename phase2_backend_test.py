@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class Phase2APITester:
-    def __init__(self, base_url="https://emergent-quest-2.preview.emergentagent.com"):
+    def __init__(self, base_url="https://heroquest-app-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
