@@ -206,7 +206,7 @@ const HabitsManager = () => {
                     <div className="flex items-start gap-4">
                       <Checkbox
                         checked={completedToday}
-                        onCheckedChange={() => !completedToday && handleTrackHabit(habit.id)}
+                        onCheckedChange={() => !completedToday && handleTrackHabit(habit.id, habit.type)}
                         disabled={completedToday}
                         className="mt-1"
                         data-testid={`habit-checkbox-${habit.id}`}
