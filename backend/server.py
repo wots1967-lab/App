@@ -1037,6 +1037,64 @@ async def get_archived_quests(current_user: dict = Depends(get_current_user)):
     }, {"_id": 0}).to_list(1000)
     return quests
 
+# --- Rewards Routes ---
+@api_router.get("/rewards")
+async def get_rewards(current_user: dict = Depends(get_current_user)):
+    rewards = await db.rewards.find({"userId": current_user['id']}, {"_id": 0}).to_list(1000)
+    return rewards
+
+@api_router.post("/rewards")
+async def create_reward(reward_data: RewardCreate, current_user: dict = Depends(get_current_user)):
+    reward = Reward(
+        userId=current_user['id'],
+        name=reward_data.name,
+        description=reward_data.description,
+        requiredLevel=reward_data.requiredLevel,
+        cost=reward_data.cost
+    )
+    
+    reward_dict = reward.model_dump()
+    reward_dict['createdAt'] = reward_dict['createdAt'].isoformat()
+    await db.rewards.insert_one(reward_dict)
+    return reward
+
+@api_router.post("/rewards/{reward_id}/purchase")
+async def purchase_reward(reward_id: str, current_user: dict = Depends(get_current_user)):
+    reward = await db.rewards.find_one({"id": reward_id, "userId": current_user['id']}, {"_id": 0})
+    if not reward:
+        raise HTTPException(status_code=404, detail="Reward not found")
+    
+    if reward['purchased']:
+        raise HTTPException(status_code=400, detail="Already purchased")
+    
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    
+    if user['character']['level'] < reward['requiredLevel']:
+        raise HTTPException(status_code=400, detail="Level too low")
+    
+    if user['character']['coins'] < reward['cost']:
+        raise HTTPException(status_code=400, detail="Not enough coins")
+    
+    user['character']['coins'] -= reward['cost']
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {"character.coins": user['character']['coins']}}
+    )
+    
+    await db.rewards.update_one(
+        {"id": reward_id},
+        {"$set": {"purchased": True}}
+    )
+    
+    return {"message": "Reward purchased!", "character": user['character']}
+
+@api_router.delete("/rewards/{reward_id}")
+async def delete_reward(reward_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.rewards.delete_one({"id": reward_id, "userId": current_user['id']})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Reward not found")
+    return {"message": "Reward deleted"}
+
 # --- Leaderboard Routes ---
 @api_router.get("/leaderboards/{board_type}")
 async def get_leaderboard(board_type: str):
