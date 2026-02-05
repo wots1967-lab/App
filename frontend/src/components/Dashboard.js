@@ -242,6 +242,10 @@ const Dashboard = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="mission">
+            <MissionPage />
+          </TabsContent>
+
           <TabsContent value="rewards">
             <RewardsPage />
           </TabsContent>
