@@ -217,19 +217,21 @@ const RewardsPage = () => {
 
       {loading ? (
         <div className="text-center py-12 text-text-dark-secondary">Завантаження...</div>
-      ) : rewards.length === 0 ? (
+      ) : (showHistory ? purchasedRewards : availableRewards).length === 0 ? (
         <Card className="bg-bg-dark-card/80 backdrop-blur-md border-white/10">
           <CardContent className="py-12 text-center">
             <Gift size={48} className="mx-auto mb-4 text-text-dark-secondary" />
-            <p className="text-text-dark-primary mb-2">Створіть свої кастомні винагороди</p>
+            <p className="text-text-dark-primary mb-2">
+              {showHistory ? 'Історія порожня' : 'Створіть свої кастомні винагороди'}
+            </p>
             <p className="text-sm text-text-dark-secondary">
-              Визначте власні цілі та винагороди за досягнення
+              {showHistory ? 'Придбайте винагороди щоб побачити їх тут' : 'Визначте власні цілі та винагороди за досягнення'}
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rewards.map((reward) => {
+          {(showHistory ? purchasedRewards : availableRewards).map((reward) => {
             const canPurchase = user?.character?.level >= reward.requiredLevel && 
                                user?.character?.coins >= reward.cost;
             const isPurchased = reward.purchased;
