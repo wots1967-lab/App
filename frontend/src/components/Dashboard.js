@@ -130,7 +130,7 @@ const Dashboard = () => {
       <header className="border-b border-white/10 bg-bg-dark-card/50 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-main to-primary-dark bg-clip-text text-transparent">
-            Quest Manager
+            Братство
           </h1>
           <div className="flex items-center gap-4">
             <EquipmentMenu />
