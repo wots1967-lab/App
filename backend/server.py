@@ -337,14 +337,17 @@ class Reward(BaseModel):
     userId: str
     name: str
     description: str = ""
+    image: str = ""
     requiredLevel: int = 1
     cost: int
     purchased: bool = False
+    purchasedAt: Optional[str] = None
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class RewardCreate(BaseModel):
     name: str
     description: str = ""
+    image: str = ""
     requiredLevel: int = 1
     cost: int
 
