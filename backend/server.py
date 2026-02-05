@@ -636,6 +636,7 @@ async def create_quest(quest_data: QuestCreate, current_user: dict = Depends(get
         title=quest_data.title,
         description=quest_data.description,
         difficulty=quest_data.difficulty,
+        reward=quest_data.reward,
         steps=steps,
         xpReward=reward['xp'],
         coinReward=reward['coins']
