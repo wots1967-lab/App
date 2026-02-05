@@ -556,6 +556,44 @@ async def delete_task(task_id: str, current_user: dict = Depends(get_current_use
         raise HTTPException(status_code=404, detail="Task not found")
     return {"message": "Task deleted"}
 
+@api_router.post("/tasks/{task_id}/uncomplete")
+async def uncomplete_task(task_id: str, current_user: dict = Depends(get_current_user)):
+    task = await db.tasks.find_one({"id": task_id, "userId": current_user['id']}, {"_id": 0})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if not task['completed']:
+        raise HTTPException(status_code=400, detail="Task is not completed")
+    
+    # Revert the task to uncompleted state
+    await db.tasks.update_one(
+        {"id": task_id},
+        {"$set": {"completed": False, "completedAt": None}}
+    )
+    
+    # Deduct XP and coins from user (if they had earned them)
+    user = await db.users.find_one({"id": current_user['id']}, {"_id": 0})
+    
+    # Calculate deductions (simple deduction without mantra effects)
+    xp_to_deduct = task['xpReward']
+    coins_to_deduct = task['coinReward']
+    
+    user['character']['coins'] = max(0, user['character']['coins'] - coins_to_deduct)
+    user['character']['xp'] = max(0, user['character']['xp'] - xp_to_deduct)
+    
+    # Check if level should be reduced
+    while user['character']['xp'] < 0 and user['character']['level'] > 1:
+        user['character']['level'] -= 1
+        user['character']['xpToNextLevel'] = calculate_xp_for_level(user['character']['level'])
+        user['character']['xp'] = user['character']['xpToNextLevel'] + user['character']['xp']
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {"character": user['character']}}
+    )
+    
+    return {"message": "Task uncompleted", "character": user['character']}
+
 # --- Habit Routes ---
 @api_router.get("/habits")
 async def get_habits(current_user: dict = Depends(get_current_user)):
