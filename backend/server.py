@@ -262,6 +262,7 @@ class Quest(BaseModel):
     title: str
     description: str = ""
     difficulty: str = "medium"
+    reward: str = ""
     steps: List[QuestStep] = Field(default_factory=list)
     currentStep: int = 0
     xpReward: int = 200
@@ -273,6 +274,7 @@ class QuestCreate(BaseModel):
     title: str
     description: str = ""
     difficulty: str = "medium"
+    reward: str = ""
     steps: List[Dict[str, str]]
 
 class Goal(BaseModel):
