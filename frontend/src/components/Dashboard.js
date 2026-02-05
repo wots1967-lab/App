@@ -121,15 +121,6 @@ const Dashboard = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleTheme}
-              className="text-text-dark-secondary hover:text-text-dark-primary"
-              data-testid="theme-toggle"
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={() => window.location.href = '/friends'}
               className="text-text-dark-secondary hover:text-text-dark-primary"
               data-testid="friends-button"
