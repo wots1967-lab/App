@@ -162,6 +162,22 @@ const RewardsPage = () => {
                 onChange={(e) => setNewReward({ ...newReward, description: e.target.value })}
                 className="bg-bg-dark border-white/10 text-white"
               />
+              <div>
+                <label className="text-sm text-text-dark-secondary mb-2 block">Зображення (опціонально)</label>
+                <div className="flex gap-3 items-center">
+                  {selectedImage && (
+                    <img src={selectedImage} alt="Preview" className="w-20 h-20 rounded-lg object-cover" />
+                  )}
+                  <label className="flex-1 cursor-pointer">
+                    <div className="bg-bg-dark border border-white/10 rounded-lg p-3 text-center hover:border-primary-main transition-colors">
+                      <span className="text-text-dark-secondary text-sm">
+                        {selectedImage ? 'Змінити зображення' : 'Завантажити зображення'}
+                      </span>
+                    </div>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  </label>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-text-dark-secondary mb-1 block">Необхідний рівень</label>
