@@ -212,9 +212,13 @@ const HabitsManager = () => {
                               <h3 className="text-text-dark-primary font-medium">
                                 {habit.name}
                               </h3>
-                              {habit.type === 'bad' && (
+                              {habit.type === 'bad' ? (
                                 <span className="text-xs bg-accent-red/20 text-accent-red px-2 py-0.5 rounded-full">
                                   Шкідлива
+                                </span>
+                              ) : (
+                                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
+                                  Корисна
                                 </span>
                               )}
                             </div>
