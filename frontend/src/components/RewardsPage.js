@@ -124,13 +124,22 @@ const RewardsPage = () => {
           <Gift className="text-accent-gold" />
           Мої Винагороди
         </h1>
-        <Button
-          onClick={() => setShowAdd(!showAdd)}
-          className="bg-gradient-to-r from-primary-main to-primary-dark"
-        >
-          <Plus size={16} className="mr-2" />
-          Створити винагороду
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setShowHistory(!showHistory)}
+            variant="outline"
+            className="bg-bg-dark-card border-white/10"
+          >
+            {showHistory ? 'Доступні' : 'Історія'}
+          </Button>
+          <Button
+            onClick={() => setShowAdd(!showAdd)}
+            className="bg-gradient-to-r from-primary-main to-primary-dark"
+          >
+            <Plus size={16} className="mr-2" />
+            Створити
+          </Button>
+        </div>
       </div>
 
       {showAdd && (
