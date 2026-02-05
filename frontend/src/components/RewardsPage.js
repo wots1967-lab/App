@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Gift, Plus, Trash2, ShoppingBag, Lock, Coins } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
