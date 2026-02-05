@@ -193,8 +193,8 @@ const Dashboard = () => {
           <TabsContent value="tasks">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-4 space-y-6">
-                <QuickAddTask onTaskAdded={fetchTasks} />
                 <CharacterCard />
+                <QuickAddTask onTaskAdded={fetchTasks} />
                 <CharacterStats />
                 <StatsOverview />
                 {isUnlocked && <SkillsOverview />}
