@@ -432,7 +432,7 @@ const MissionPage = () => {
                         {mission.slogan && (
                           <div className="pt-2 border-t border-white/10">
                             <p className="text-lg italic text-white/90 font-medium">
-                              "{mission.slogan}"
+                              &ldquo;{mission.slogan}&rdquo;
                             </p>
                           </div>
                         )}
