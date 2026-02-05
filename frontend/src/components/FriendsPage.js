@@ -46,6 +46,7 @@ const FriendsPage = () => {
       );
       toast.success('Запит на дружбу відправлено!');
       setSearchEmail('');
+      setSearchResult(null);
       fetchFriends();
     } catch (error) {
       if (error.response?.status === 404) {
@@ -55,6 +56,22 @@ const FriendsPage = () => {
       } else {
         toast.error('Помилка');
       }
+    }
+  };
+
+  const handleSearchEmail = async (email) => {
+    setSearchEmail(email);
+    if (email.includes('@') && email.length > 5) {
+      try {
+        const response = await axios.get(`${API}/users/search?email=${email}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setSearchResult(response.data);
+      } catch (error) {
+        setSearchResult(null);
+      }
+    } else {
+      setSearchResult(null);
     }
   };
 
