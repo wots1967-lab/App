@@ -60,15 +60,22 @@ const HabitsManager = () => {
     }
   };
 
-  const handleTrackHabit = async (habitId) => {
+  const handleTrackHabit = async (habitId, habitType) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${API}/habits/${habitId}/track`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      toast.success('Звичку відмічено!');
+      if (habitType === 'bad') {
+        toast.warning('Шкідливу звичку відмічено. HP -15');
+        if (response.data.penaltyApplied) {
+          toast.error('HP впало до 0! Штраф: -2 рівні, -1000 монет');
+        }
+      } else {
+        toast.success('Звичку відмічено! +XP +монети');
+      }
       fetchHabits();
     } catch (error) {
       if (error.response?.status === 400) {
