@@ -541,7 +541,12 @@ async def complete_task(task_id: str, current_user: dict = Depends(get_current_u
         "leveledUp": leveled_up,
         "oldLevel": old_level,
         "newLevel": new_level,
-        "achievements": new_achievements
+        "achievements": new_achievements,
+        "bonuses": {
+            "xpBonus": final_xp - task['xpReward'],
+            "coinsBonus": final_coins - task['coinReward'],
+            "equippedItem": equipped_item
+        }
     }
 
 @api_router.delete("/tasks/{task_id}")
