@@ -16,8 +16,7 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { LogOut, Moon, Sun, User, Lock, Users } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import { LogOut, User, Lock, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
