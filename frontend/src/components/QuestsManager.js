@@ -21,6 +21,7 @@ const QuestsManager = () => {
     title: '',
     description: '',
     difficulty: 'medium',
+    reward: '',
     steps: [{ title: '' }]
   });
 
