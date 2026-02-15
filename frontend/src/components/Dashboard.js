@@ -31,7 +31,7 @@ const Dashboard = () => {
   const [levelUpData, setLevelUpData] = useState({ oldLevel: 1, newLevel: 1 });
   const [achievement, setAchievement] = useState(null);
 
-  const isUnlocked = user?.character?.level >= 3;
+  const isUnlocked = true; // All features unlocked from level 1
 
   useEffect(() => {
     if (token) {
