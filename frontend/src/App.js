@@ -7,6 +7,7 @@ import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import ProfilePage from './components/ProfilePage';
 import FriendsPage from './components/FriendsPage';
+import FriendProfilePage from './components/FriendProfilePage';
 import '@/App.css';
 
 const ProtectedRoute = ({ children }) => {
