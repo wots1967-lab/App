@@ -362,6 +362,18 @@ class GiftRewardRequest(BaseModel):
     rewardId: str
     friendId: str
 
+class Message(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    senderId: str
+    receiverId: str
+    content: str
+    read: bool = False
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class MessageCreate(BaseModel):
+    receiverId: str
+    content: str
+
 class Mission(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     userId: str
