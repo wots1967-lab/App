@@ -1136,6 +1136,104 @@ async def accept_friend(friend_id: str, current_user: dict = Depends(get_current
     )
     return {"message": "Friend request accepted"}
 
+# --- Messages Routes ---
+@api_router.get("/messages/{friend_id}")
+async def get_messages(friend_id: str, current_user: dict = Depends(get_current_user)):
+    messages = await db.messages.find({
+        "$or": [
+            {"senderId": current_user['id'], "receiverId": friend_id},
+            {"senderId": friend_id, "receiverId": current_user['id']}
+        ]
+    }, {"_id": 0}).sort("createdAt", 1).to_list(100)
+    
+    # Mark messages as read
+    await db.messages.update_many(
+        {"senderId": friend_id, "receiverId": current_user['id'], "read": False},
+        {"$set": {"read": True}}
+    )
+    
+    return messages
+
+@api_router.post("/messages")
+async def send_message(msg_data: MessageCreate, current_user: dict = Depends(get_current_user)):
+    if not msg_data.content.strip():
+        raise HTTPException(status_code=400, detail="Message cannot be empty")
+    
+    message = Message(
+        senderId=current_user['id'],
+        receiverId=msg_data.receiverId,
+        content=msg_data.content.strip()
+    )
+    
+    msg_dict = message.model_dump()
+    msg_dict['createdAt'] = msg_dict['createdAt'].isoformat()
+    await db.messages.insert_one(msg_dict)
+    
+    return message
+
+@api_router.get("/messages/unread/count")
+async def get_unread_count(current_user: dict = Depends(get_current_user)):
+    count = await db.messages.count_documents({
+        "receiverId": current_user['id'],
+        "read": False
+    })
+    return {"count": count}
+
+# --- Friend Profile Route ---
+@api_router.get("/friends/{friend_id}/profile")
+async def get_friend_profile(friend_id: str, current_user: dict = Depends(get_current_user)):
+    # Check if they are friends
+    friendship = await db.friends.find_one({
+        "$or": [
+            {"userId": current_user['id'], "friendId": friend_id, "status": "accepted"},
+            {"userId": friend_id, "friendId": current_user['id'], "status": "accepted"}
+        ]
+    }, {"_id": 0})
+    
+    if not friendship:
+        raise HTTPException(status_code=403, detail="Not friends with this user")
+    
+    # Get friend's data
+    friend = await db.users.find_one({"id": friend_id}, {"_id": 0, "passwordHash": 0})
+    if not friend:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get friend's active quests
+    quests = await db.quests.find({
+        "userId": friend_id,
+        "completed": False
+    }, {"_id": 0}).to_list(10)
+    
+    # Get friend's missions
+    missions = await db.missions.find({"userId": friend_id}, {"_id": 0}).to_list(10)
+    
+    # Get friend's purchased rewards
+    rewards = await db.rewards.find({
+        "userId": friend_id,
+        "purchased": True
+    }, {"_id": 0}).to_list(10)
+    
+    # Calculate stats
+    total_tasks = await db.tasks.count_documents({"userId": friend_id})
+    completed_tasks = await db.tasks.count_documents({"userId": friend_id, "completed": True})
+    total_quests = await db.quests.count_documents({"userId": friend_id})
+    completed_quests = await db.quests.count_documents({"userId": friend_id, "completed": True})
+    
+    return {
+        "user": friend,
+        "quests": quests,
+        "missions": missions,
+        "rewards": rewards,
+        "stats": {
+            "totalTasks": total_tasks,
+            "completedTasks": completed_tasks,
+            "totalQuests": total_quests,
+            "completedQuests": completed_quests,
+            "taskCompletionRate": round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0, 1),
+            "questCompletionRate": round((completed_quests / total_quests * 100) if total_quests > 0 else 0, 1)
+        }
+    }
+
 # --- Archive Routes ---
 @api_router.get("/tasks/archive")
 async def get_archived_tasks(current_user: dict = Depends(get_current_user)):
