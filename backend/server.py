@@ -287,6 +287,9 @@ class Quest(BaseModel):
     xpReward: int = 200
     coinReward: int = 100
     completed: bool = False
+    isShared: bool = False
+    ownerId: Optional[str] = None  # Original quest owner
+    originalQuestId: Optional[str] = None  # Reference to original quest
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class QuestCreate(BaseModel):
@@ -295,6 +298,19 @@ class QuestCreate(BaseModel):
     difficulty: str = "medium"
     reward: str = ""
     steps: List[Dict[str, str]]
+
+class QuestInvitation(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    questId: str
+    questTitle: str
+    fromUserId: str
+    fromUserName: str
+    toUserId: str
+    status: str = "pending"  # pending, accepted, declined
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class QuestInviteRequest(BaseModel):
+    friendId: str
 
 class Goal(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
