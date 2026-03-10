@@ -789,6 +789,38 @@ async def delete_habit(habit_id: str, current_user: dict = Depends(get_current_u
         raise HTTPException(status_code=404, detail="Habit not found")
     return {"message": "Habit deleted"}
 
+@api_router.post("/habits/check-missed-days")
+async def check_missed_days(current_user: dict = Depends(get_current_user)):
+    """Check all habits for missed days and reduce progress by 1% per missed day"""
+    habits = await db.habits.find({"userId": current_user['id']}, {"_id": 0}).to_list(100)
+    updated_habits = []
+    
+    today = date.today()
+    
+    for habit in habits:
+        last_completed = habit.get('lastCompleted')
+        if not last_completed:
+            continue
+            
+        last_date = date.fromisoformat(last_completed)
+        days_missed = (today - last_date).days - 1  # -1 because we don't count today
+        
+        if days_missed > 0:
+            current_progress = habit.get('progress', 0)
+            progress_loss = days_missed  # -1% per missed day
+            new_progress = max(0, current_progress - progress_loss)
+            
+            if new_progress != current_progress:
+                await db.habits.update_one(
+                    {"id": habit['id']},
+                    {"$set": {"progress": new_progress}}
+                )
+                habit['progress'] = new_progress
+                habit['progressLost'] = progress_loss
+                updated_habits.append(habit)
+    
+    return {"updatedHabits": updated_habits}
+
 # --- Quest Routes ---
 @api_router.get("/quests")
 async def get_quests(current_user: dict = Depends(get_current_user)):
