@@ -158,21 +158,44 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-main to-primary-dark bg-clip-text text-transparent">
             Братство
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <EquipmentMenu />
+            
+            {/* Notifications */}
+            <NotificationsDropdown />
+            
+            {/* Messages */}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => window.location.href = '/friends'}
+              onClick={() => navigate('/messages')}
+              className="relative text-text-dark-secondary hover:text-text-dark-primary"
+              data-testid="messages-button"
+            >
+              <MessageCircle size={20} />
+              {unreadMessages > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-main rounded-full text-xs flex items-center justify-center text-white">
+                  {unreadMessages > 9 ? '9+' : unreadMessages}
+                </span>
+              )}
+            </Button>
+            
+            {/* Friends */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/friends')}
               className="text-text-dark-secondary hover:text-text-dark-primary"
               data-testid="friends-button"
             >
               <Users size={20} />
             </Button>
+            
+            {/* Profile */}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => window.location.href = '/profile'}
+              onClick={() => navigate('/profile')}
               className="text-text-dark-secondary hover:text-text-dark-primary flex items-center gap-2"
               data-testid="profile-button"
             >
