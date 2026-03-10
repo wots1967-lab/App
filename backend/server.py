@@ -508,6 +508,14 @@ async def create_task(task_data: TaskCreate, current_user: dict = Depends(get_cu
     }
     reward = rewards.get(task_data.difficulty, rewards["medium"])
     
+    # Process steps
+    task_steps = []
+    for step in task_data.steps:
+        task_steps.append(TaskStep(
+            title=step.get('title', ''),
+            completed=False
+        ))
+    
     task = Task(
         userId=current_user['id'],
         title=task_data.title,
@@ -518,6 +526,8 @@ async def create_task(task_data: TaskCreate, current_user: dict = Depends(get_cu
         coinReward=reward['coins'],
         skills=task_data.skills,
         tags=task_data.tags,
+        linkedStats=task_data.linkedStats,
+        steps=[s.model_dump() for s in task_steps],
         priority=task_data.priority,
         dueDate=task_data.dueDate
     )
