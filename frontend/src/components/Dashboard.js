@@ -224,6 +224,7 @@ const Dashboard = () => {
                     onTaskComplete={handleTaskComplete}
                     onTaskDelete={handleTaskDelete}
                     onTaskUncomplete={handleTaskUncomplete}
+                    onAddTaskClick={scrollToQuickAdd}
                   />
                 </motion.div>
               </div>
