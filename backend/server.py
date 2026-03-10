@@ -400,6 +400,7 @@ class GiftRewardRequest(BaseModel):
 class Message(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     senderId: str
+    senderName: str = ""
     receiverId: str
     content: str
     read: bool = False
@@ -408,6 +409,16 @@ class Message(BaseModel):
 class MessageCreate(BaseModel):
     receiverId: str
     content: str
+
+class Notification(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    type: str  # quest_invite, quest_complete, achievement, friend_achievement, reward_received
+    title: str
+    message: str
+    data: Dict = Field(default_factory=dict)
+    read: bool = False
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Mission(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
