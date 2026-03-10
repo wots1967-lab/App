@@ -8,94 +8,48 @@
 - **Backend**: FastAPI, MongoDB (motor)
 - **Auth**: JWT tokens, bcrypt
 
-## Архітектура
-```
-/app/
-├── backend/
-│   └── server.py        # FastAPI з усіма routes та models
-├── frontend/
-│   ├── src/
-│   │   ├── components/  # React компоненти
-│   │   ├── contexts/    # Auth та Theme contexts
-│   │   └── App.js       # Router
-│   └── craco.config.js  # Webpack config
-```
-
 ## Реалізовані функції
 
-### Фаза 1 (MVP) ✅
-- Реєстрація та авторизація
-- Система персонажів (рівень, XP, монети, HP)
-- Створення та виконання завдань
-- Система складності завдань
+### Фаза 1-2 ✅
+- Реєстрація/авторизація, система персонажів
+- Завдання, звички, квести, магазин мантр, досягнення
 
-### Фаза 2 ✅
-- Звички (корисні/шкідливі) з HP системою
-- Квести з кроками
-- Магазин мантр з ефектами
-- Досягнення
-- Розблокування функцій на рівні 3
+### Фаза 3-4 ✅
+- Кастомні винагороди, система друзів, повідомлення
+- Профіль друга, сторінка "Місія", завантаження зображень
 
-### Фаза 3 ✅
-- Кастомні винагороди з зображеннями
-- Історія виконаних завдань
-- Скасування виконання завдань
-- Система друзів
-- Спільні квести
-- Дарування винагород
+### Фаза 5 ✅
+- Кнопка "Додати" у блоці завдань
+- Кастомні характеристики (CRUD)
+- Підзавдання (кроки) з progress bar
+- Пов'язані характеристики (+1 при виконанні)
 
-### Фаза 4 ✅
-- Повідомлення друзям
-- Профіль друга з квестами, місіями, винагородами
-- Сторінка "Місія" з картками-нагадуваннями
-- Завантаження зображень з пристрою
+### Фаза 6 ✅ (Поточна)
+- **Progress bar звичок** - візуальне відображення прогресу 0-100%
+- **Система прогресу**:
+  - +1% за кожен день виконання
+  - -1% за кожен пропущений день
+  - +5% бонус за кожні 10 днів підряд
+- **Q&A кнопка** (?) з модальним вікном правил
+- **Toast повідомлення** з відсотком прогресу
+- **Кольорове кодування** progress bar:
+  - Червоний: <25%
+  - Помаранчевий: 25-50%
+  - Жовтий: 50-80%
+  - Зелений: 80-100%
 
-### Фаза 5 ✅ (Поточна)
-- **Кнопка "Додати"** в блоці "Сьогоднішні завдання"
-- **Кастомні характеристики** - створення, редагування, видалення (бали повертаються)
-- **Підзавдання (кроки)** - додавання кроків до завдань з progress bar
-- **Пов'язані характеристики** - при виконанні завдання +1 до обраних характеристик
+## Ключові API
 
-## API Endpoints
-
-### Auth
-- `POST /api/auth/register` - реєстрація
-- `POST /api/auth/login` - вхід
-
-### Tasks
-- `GET/POST /api/tasks` - CRUD завдань (з linkedStats та steps)
-- `POST /api/tasks/{id}/complete` - виконання (з бонусом до характеристик)
-- `POST /api/tasks/{id}/uncomplete` - скасування
-- `POST /api/tasks/{id}/steps` - додати крок
-- `POST /api/tasks/{id}/steps/{stepId}/toggle` - перемкнути крок
-- `DELETE /api/tasks/{id}/steps/{stepId}` - видалити крок
-- `GET /api/tasks/archive` - історія
+### Habits (оновлено)
+- `POST /api/habits/{id}/track` - повертає `progressGain` та `streakBonus`
+- `POST /api/habits/check-missed-days` - знижує прогрес за пропущені дні
 
 ### Custom Stats
-- `GET /api/user/custom-stats` - список кастомних характеристик
-- `POST /api/user/custom-stats` - створити (label, icon, color)
-- `PUT /api/user/custom-stats/{id}` - оновити
-- `DELETE /api/user/custom-stats/{id}` - видалити (бали повертаються)
-- `POST /api/user/allocate-custom-stats` - розподіл очок
+- `POST/PUT/DELETE /api/user/custom-stats` - CRUD кастомних характеристик
 
-### Habits
-- `GET/POST /api/habits` - CRUD звичок
-- `POST /api/habits/{id}/track` - відмітка
-
-### Quests
-- `GET/POST /api/quests` - CRUD квестів
-- `POST /api/quests/{id}/next-step` - виконання кроку
-
-### Missions
-- `GET/POST/PUT/DELETE /api/missions` - CRUD місій
-
-### Messages
-- `GET /api/messages/{friendId}` - повідомлення
-- `POST /api/messages` - відправити
-
-### Friends
-- `GET /api/friends` - список друзів
-- `GET /api/friends/{friendId}/profile` - профіль друга
+### Tasks
+- `POST /api/tasks/{id}/steps` - додавання кроків
+- `POST /api/tasks/{id}/steps/{stepId}/toggle` - перемикання
 
 ## Беклог
 
@@ -109,15 +63,11 @@
 - [ ] Таблиці лідерів
 - [ ] Бос-битви
 - [ ] Сезонні події
-- [ ] AI рекомендації завдань
 
 ## Тестові звіти
-- `/app/test_reports/iteration_1.json` - Фаза 2
-- `/app/test_reports/iteration_2.json` - Фаза 2 фікси
-- `/app/test_reports/iteration_3.json` - Фаза 3
-- `/app/test_reports/iteration_4.json` - Фаза 4
-- `/app/test_reports/iteration_5.json` - Фаза 5
+- `/app/test_reports/iteration_1-6.json`
+- `/app/backend/tests/test_habit_progress.py`
 
 ## Останнє оновлення
 **Дата**: Березень 2026
-**Фаза 5 завершена**: Кастомні характеристики, підзавдання, linkedStats
+**Фаза 6 завершена**: Система прогресу звичок з Q&A модальним вікном
