@@ -40,18 +40,22 @@ const QuickAddTask = ({ onTaskAdded }) => {
   const [customStats, setCustomStats] = useState([]);
 
   useEffect(() => {
-    if (user?.character?.customStats) {
+    if (user?.character?.customStats && Array.isArray(user.character.customStats)) {
       setCustomStats(user.character.customStats);
+    } else {
+      setCustomStats([]);
     }
   }, [user]);
 
   const allStats = [
     ...DEFAULT_STATS,
-    ...customStats.map(cs => ({
-      key: cs.key || cs.id,
-      label: cs.label,
-      icon: cs.icon
-    }))
+    ...customStats
+      .filter(cs => cs && (cs.key || cs.id))
+      .map(cs => ({
+        key: cs.key || cs.id,
+        label: cs.label || 'Без назви',
+        icon: cs.icon || '⭐'
+      }))
   ];
 
   const handleSubmit = async (e) => {
@@ -115,28 +119,28 @@ const QuickAddTask = ({ onTaskAdded }) => {
 
   return (
     <Card className="bg-bg-dark-card/80 backdrop-blur-md border-white/10" data-testid="quick-add-task">
-      <CardHeader>
-        <CardTitle className="text-lg text-text-dark-primary flex items-center gap-2">
-          <Plus size={20} className="text-primary-main" />
+      <CardHeader className="pb-2 sm:pb-4">
+        <CardTitle className="text-base sm:text-lg text-text-dark-primary flex items-center gap-2">
+          <Plus size={18} className="text-primary-main sm:w-5 sm:h-5" />
           Швидке додавання
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-3">
+      <CardContent className="pt-0">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
           <Input
             type="text"
             placeholder="Нове завдання..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="bg-bg-dark border-white/10 text-white focus:border-primary-main"
+            className="bg-bg-dark border-white/10 text-white focus:border-primary-main text-sm sm:text-base h-9 sm:h-10"
             data-testid="task-title-input"
           />
           
           <Select value={difficulty} onValueChange={setDifficulty}>
-            <SelectTrigger className="bg-bg-dark border-white/10 text-white" data-testid="difficulty-select">
+            <SelectTrigger className="bg-bg-dark border-white/10 text-white text-sm sm:text-base h-9 sm:h-10" data-testid="difficulty-select">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-bg-dark-card border-white/10">
               <SelectItem value="easy">Легко (15 XP)</SelectItem>
               <SelectItem value="medium">Середньо (35 XP)</SelectItem>
               <SelectItem value="hard">Важко (75 XP)</SelectItem>
@@ -149,9 +153,9 @@ const QuickAddTask = ({ onTaskAdded }) => {
             type="button"
             variant="ghost"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="w-full justify-start text-text-dark-secondary hover:text-primary-main"
+            className="w-full justify-start text-text-dark-secondary hover:text-primary-main text-sm sm:text-base h-8 sm:h-9"
           >
-            <Sparkles size={16} className="mr-2" />
+            <Sparkles size={14} className="mr-2 sm:w-4 sm:h-4" />
             {showAdvanced ? 'Приховати опції' : 'Додаткові опції'}
           </Button>
 
@@ -161,29 +165,29 @@ const QuickAddTask = ({ onTaskAdded }) => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="space-y-4"
+                className="space-y-3 sm:space-y-4 overflow-hidden"
               >
                 {/* Steps */}
                 <div className="space-y-2">
-                  <label className="text-sm text-text-dark-secondary flex items-center gap-2">
-                    <ListChecks size={16} />
+                  <label className="text-xs sm:text-sm text-text-dark-secondary flex items-center gap-2">
+                    <ListChecks size={14} className="sm:w-4 sm:h-4" />
                     Кроки (підзавдання)
                   </label>
                   
                   {steps.length > 0 && (
-                    <div className="space-y-1">
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
                       {steps.map((step, idx) => (
-                        <div key={idx} className="flex items-center gap-2 bg-bg-dark/50 p-2 rounded text-sm">
+                        <div key={idx} className="flex items-center gap-2 bg-bg-dark/50 p-2 rounded text-xs sm:text-sm">
                           <span className="text-text-dark-secondary">{idx + 1}.</span>
-                          <span className="flex-1 text-text-dark-primary">{step}</span>
+                          <span className="flex-1 text-text-dark-primary truncate">{step}</span>
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon"
                             onClick={() => setSteps(steps.filter((_, i) => i !== idx))}
-                            className="h-6 w-6 text-red-400"
+                            className="h-5 w-5 sm:h-6 sm:w-6 text-red-400 flex-shrink-0"
                           >
-                            <X size={12} />
+                            <X size={10} className="sm:w-3 sm:h-3" />
                           </Button>
                         </div>
                       ))}
@@ -197,9 +201,9 @@ const QuickAddTask = ({ onTaskAdded }) => {
                       value={newStep}
                       onChange={(e) => setNewStep(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddStep())}
-                      className="bg-bg-dark border-white/10 text-white text-sm"
+                      className="bg-bg-dark border-white/10 text-white text-xs sm:text-sm h-8 sm:h-9"
                     />
-                    <Button type="button" onClick={handleAddStep} variant="outline" size="sm">
+                    <Button type="button" onClick={handleAddStep} variant="outline" size="sm" className="h-8 sm:h-9 px-2 sm:px-3">
                       +
                     </Button>
                   </div>
@@ -207,15 +211,15 @@ const QuickAddTask = ({ onTaskAdded }) => {
 
                 {/* Linked Stats */}
                 <div className="space-y-2">
-                  <label className="text-sm text-text-dark-secondary">
-                    Пов'язані характеристики (отримають +1 при виконанні)
+                  <label className="text-xs sm:text-sm text-text-dark-secondary">
+                    Характеристики (+1 при виконанні)
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-1.5 sm:gap-2 max-h-48 overflow-y-auto">
                     {allStats.map((stat) => (
                       <div
                         key={stat.key}
                         onClick={() => toggleStat(stat.key)}
-                        className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
+                        className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-lg border cursor-pointer transition-colors ${
                           linkedStats.includes(stat.key)
                             ? 'border-primary-main bg-primary-main/20'
                             : 'border-white/10 bg-bg-dark/50 hover:border-white/30'
@@ -223,23 +227,23 @@ const QuickAddTask = ({ onTaskAdded }) => {
                       >
                         <Checkbox
                           checked={linkedStats.includes(stat.key)}
-                          className="pointer-events-none"
+                          className="pointer-events-none h-3 w-3 sm:h-4 sm:w-4"
                         />
-                        <span className="text-lg">{stat.icon}</span>
-                        <span className="text-sm text-text-dark-primary">{stat.label}</span>
+                        <span className="text-sm sm:text-lg">{stat.icon}</span>
+                        <span className="text-xs sm:text-sm text-text-dark-primary truncate">{stat.label}</span>
                       </div>
                     ))}
                   </div>
                   {linkedStats.length > 0 && (
                     <p className="text-xs text-primary-main">
-                      Обрано: {linkedStats.length} характеристик
+                      Обрано: {linkedStats.length}
                     </p>
                   )}
                 </div>
 
                 {/* Tags */}
                 <div className="space-y-2">
-                  <label className="text-sm text-text-dark-secondary">Теги</label>
+                  <label className="text-xs sm:text-sm text-text-dark-secondary">Теги</label>
                   <div className="flex gap-2">
                     <Input
                       type="text"
@@ -247,16 +251,16 @@ const QuickAddTask = ({ onTaskAdded }) => {
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                      className="bg-bg-dark border-white/10 text-white focus:border-primary-main"
+                      className="bg-bg-dark border-white/10 text-white focus:border-primary-main text-xs sm:text-sm h-8 sm:h-9"
                     />
-                    <Button type="button" onClick={handleAddTag} variant="outline" size="sm">
+                    <Button type="button" onClick={handleAddTag} variant="outline" size="sm" className="h-8 sm:h-9 px-2 sm:px-3">
                       +
                     </Button>
                   </div>
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {tags.map((tag, idx) => (
-                        <span key={idx} className="bg-primary-main/20 text-primary-main text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        <span key={idx} className="bg-primary-main/20 text-primary-main text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                           {tag}
                           <button type="button" onClick={() => setTags(tags.filter((_, i) => i !== idx))} className="hover:text-white">×</button>
                         </span>
@@ -270,7 +274,7 @@ const QuickAddTask = ({ onTaskAdded }) => {
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-primary-main to-primary-dark hover:shadow-primary-glow"
+            className="w-full bg-gradient-to-r from-primary-main to-primary-dark hover:shadow-primary-glow text-sm sm:text-base h-9 sm:h-10"
             disabled={loading || !title.trim()}
             data-testid="add-task-button"
           >
