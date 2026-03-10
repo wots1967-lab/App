@@ -1,23 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Checkbox } from './ui/checkbox';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import { Plus } from 'lucide-react';
+import { Plus, X, ListChecks, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+const DEFAULT_STATS = [
+  { key: 'strength', label: 'Сила', icon: '💪' },
+  { key: 'intelligence', label: 'Інтелект', icon: '🧠' },
+  { key: 'stamina', label: 'Витривалість', icon: '❤️' },
+  { key: 'agility', label: 'Спритність', icon: '⚡' },
+  { key: 'creativity', label: 'Креативність', icon: '🎨' },
+  { key: 'charisma', label: 'Харизма', icon: '👥' }
+];
+
 const QuickAddTask = ({ onTaskAdded }) => {
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const [title, setTitle] = useState('');
   const [difficulty, setDifficulty] = useState('medium');
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  
+  // Steps
+  const [steps, setSteps] = useState([]);
+  const [newStep, setNewStep] = useState('');
+  
+  // Linked stats
+  const [linkedStats, setLinkedStats] = useState([]);
+  const [customStats, setCustomStats] = useState([]);
+
+  useEffect(() => {
+    if (user?.character?.customStats) {
+      setCustomStats(user.character.customStats);
+    }
+  }, [user]);
+
+  const allStats = [
+    ...DEFAULT_STATS,
+    ...customStats.map(cs => ({
+      key: cs.key || cs.id,
+      label: cs.label,
+      icon: cs.icon
+    }))
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +68,8 @@ const QuickAddTask = ({ onTaskAdded }) => {
           difficulty,
           skills: [],
           tags,
+          linkedStats,
+          steps: steps.map(s => ({ title: s })),
           priority: 'medium'
         },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -42,6 +79,9 @@ const QuickAddTask = ({ onTaskAdded }) => {
       setTitle('');
       setDifficulty('medium');
       setTags([]);
+      setSteps([]);
+      setLinkedStats([]);
+      setShowAdvanced(false);
       if (onTaskAdded) onTaskAdded();
     } catch (error) {
       toast.error('Помилка при додаванні завдання');
@@ -55,6 +95,21 @@ const QuickAddTask = ({ onTaskAdded }) => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
       setTags([...tags, newTag.trim()]);
       setNewTag('');
+    }
+  };
+
+  const handleAddStep = () => {
+    if (newStep.trim()) {
+      setSteps([...steps, newStep.trim()]);
+      setNewStep('');
+    }
+  };
+
+  const toggleStat = (statKey) => {
+    if (linkedStats.includes(statKey)) {
+      setLinkedStats(linkedStats.filter(s => s !== statKey));
+    } else {
+      setLinkedStats([...linkedStats, statKey]);
     }
   };
 
@@ -76,6 +131,7 @@ const QuickAddTask = ({ onTaskAdded }) => {
             className="bg-bg-dark border-white/10 text-white focus:border-primary-main"
             data-testid="task-title-input"
           />
+          
           <Select value={difficulty} onValueChange={setDifficulty}>
             <SelectTrigger className="bg-bg-dark border-white/10 text-white" data-testid="difficulty-select">
               <SelectValue />
@@ -87,31 +143,131 @@ const QuickAddTask = ({ onTaskAdded }) => {
               <SelectItem value="very_hard">Дуже важко (150 XP)</SelectItem>
             </SelectContent>
           </Select>
-          <div className="space-y-2">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Додати тег..."
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                className="bg-bg-dark border-white/10 text-white focus:border-primary-main"
-              />
-              <Button type="button" onClick={handleAddTag} variant="outline" size="sm">
-                +
-              </Button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {tags.map((tag, idx) => (
-                  <span key={idx} className="bg-primary-main/20 text-primary-main text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                    {tag}
-                    <button onClick={() => setTags(tags.filter((_, i) => i !== idx))} className="hover:text-white">×</button>
-                  </span>
-                ))}
-              </div>
+
+          {/* Toggle advanced options */}
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="w-full justify-start text-text-dark-secondary hover:text-primary-main"
+          >
+            <Sparkles size={16} className="mr-2" />
+            {showAdvanced ? 'Приховати опції' : 'Додаткові опції'}
+          </Button>
+
+          <AnimatePresence>
+            {showAdvanced && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-4"
+              >
+                {/* Steps */}
+                <div className="space-y-2">
+                  <label className="text-sm text-text-dark-secondary flex items-center gap-2">
+                    <ListChecks size={16} />
+                    Кроки (підзавдання)
+                  </label>
+                  
+                  {steps.length > 0 && (
+                    <div className="space-y-1">
+                      {steps.map((step, idx) => (
+                        <div key={idx} className="flex items-center gap-2 bg-bg-dark/50 p-2 rounded text-sm">
+                          <span className="text-text-dark-secondary">{idx + 1}.</span>
+                          <span className="flex-1 text-text-dark-primary">{step}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setSteps(steps.filter((_, i) => i !== idx))}
+                            className="h-6 w-6 text-red-400"
+                          >
+                            <X size={12} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Додати крок..."
+                      value={newStep}
+                      onChange={(e) => setNewStep(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddStep())}
+                      className="bg-bg-dark border-white/10 text-white text-sm"
+                    />
+                    <Button type="button" onClick={handleAddStep} variant="outline" size="sm">
+                      +
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Linked Stats */}
+                <div className="space-y-2">
+                  <label className="text-sm text-text-dark-secondary">
+                    Пов'язані характеристики (отримають +1 при виконанні)
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {allStats.map((stat) => (
+                      <div
+                        key={stat.key}
+                        onClick={() => toggleStat(stat.key)}
+                        className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
+                          linkedStats.includes(stat.key)
+                            ? 'border-primary-main bg-primary-main/20'
+                            : 'border-white/10 bg-bg-dark/50 hover:border-white/30'
+                        }`}
+                      >
+                        <Checkbox
+                          checked={linkedStats.includes(stat.key)}
+                          className="pointer-events-none"
+                        />
+                        <span className="text-lg">{stat.icon}</span>
+                        <span className="text-sm text-text-dark-primary">{stat.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {linkedStats.length > 0 && (
+                    <p className="text-xs text-primary-main">
+                      Обрано: {linkedStats.length} характеристик
+                    </p>
+                  )}
+                </div>
+
+                {/* Tags */}
+                <div className="space-y-2">
+                  <label className="text-sm text-text-dark-secondary">Теги</label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Додати тег..."
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+                      className="bg-bg-dark border-white/10 text-white focus:border-primary-main"
+                    />
+                    <Button type="button" onClick={handleAddTag} variant="outline" size="sm">
+                      +
+                    </Button>
+                  </div>
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {tags.map((tag, idx) => (
+                        <span key={idx} className="bg-primary-main/20 text-primary-main text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          {tag}
+                          <button type="button" onClick={() => setTags(tags.filter((_, i) => i !== idx))} className="hover:text-white">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
+
           <Button
             type="submit"
             className="w-full bg-gradient-to-r from-primary-main to-primary-dark hover:shadow-primary-glow"
