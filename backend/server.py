@@ -190,6 +190,7 @@ class Character(BaseModel):
     xpToNextLevel: int = 150
     coins: int = 0
     stats: Stats = Field(default_factory=Stats)
+    customStats: List[CustomStat] = Field(default_factory=list)
     skills: Skills = Field(default_factory=Skills)
     availableStatPoints: int = 0
     avatar: str = ""
