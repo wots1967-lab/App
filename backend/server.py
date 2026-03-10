@@ -919,6 +919,133 @@ async def delete_quest(quest_id: str, current_user: dict = Depends(get_current_u
         raise HTTPException(status_code=404, detail="Quest not found")
     return {"message": "Quest deleted"}
 
+# --- Quest Invitation Routes ---
+@api_router.post("/quests/{quest_id}/invite")
+async def invite_to_quest(quest_id: str, invite_data: QuestInviteRequest, current_user: dict = Depends(get_current_user)):
+    quest = await db.quests.find_one({"id": quest_id, "userId": current_user['id']}, {"_id": 0})
+    if not quest:
+        raise HTTPException(status_code=404, detail="Quest not found")
+    
+    # Check if friend exists
+    friend = await db.users.find_one({"id": invite_data.friendId}, {"_id": 0, "passwordHash": 0})
+    if not friend:
+        raise HTTPException(status_code=404, detail="Friend not found")
+    
+    # Check if already invited
+    existing = await db.quest_invitations.find_one({
+        "questId": quest_id,
+        "toUserId": invite_data.friendId,
+        "status": "pending"
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Already invited")
+    
+    invitation = QuestInvitation(
+        questId=quest_id,
+        questTitle=quest['title'],
+        fromUserId=current_user['id'],
+        fromUserName=current_user['character']['name'],
+        toUserId=invite_data.friendId
+    )
+    
+    inv_dict = invitation.model_dump()
+    inv_dict['createdAt'] = inv_dict['createdAt'].isoformat()
+    await db.quest_invitations.insert_one(inv_dict)
+    
+    return {"message": f"Invitation sent to {friend['character']['name']}"}
+
+@api_router.get("/quests/invitations")
+async def get_quest_invitations(current_user: dict = Depends(get_current_user)):
+    invitations = await db.quest_invitations.find({
+        "toUserId": current_user['id'],
+        "status": "pending"
+    }, {"_id": 0}).to_list(100)
+    return invitations
+
+@api_router.post("/quests/invitations/{invitation_id}/accept")
+async def accept_quest_invitation(invitation_id: str, current_user: dict = Depends(get_current_user)):
+    invitation = await db.quest_invitations.find_one({
+        "id": invitation_id,
+        "toUserId": current_user['id'],
+        "status": "pending"
+    }, {"_id": 0})
+    
+    if not invitation:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    
+    # Get original quest
+    original_quest = await db.quests.find_one({"id": invitation['questId']}, {"_id": 0})
+    if not original_quest:
+        raise HTTPException(status_code=404, detail="Quest no longer exists")
+    
+    # Create a copy of the quest for the invited user
+    new_quest = Quest(
+        userId=current_user['id'],
+        title=original_quest['title'],
+        description=original_quest['description'],
+        difficulty=original_quest['difficulty'],
+        reward=original_quest['reward'],
+        steps=[QuestStep(title=s['title'], description=s.get('description', '')) for s in original_quest['steps']],
+        xpReward=original_quest['xpReward'],
+        coinReward=original_quest['coinReward'],
+        isShared=True,
+        ownerId=invitation['fromUserId'],
+        originalQuestId=original_quest['id']
+    )
+    
+    quest_dict = new_quest.model_dump()
+    quest_dict['createdAt'] = quest_dict['createdAt'].isoformat()
+    await db.quests.insert_one(quest_dict)
+    
+    # Update invitation status
+    await db.quest_invitations.update_one(
+        {"id": invitation_id},
+        {"$set": {"status": "accepted"}}
+    )
+    
+    return {"message": "Quest accepted!", "quest": new_quest}
+
+@api_router.post("/quests/invitations/{invitation_id}/decline")
+async def decline_quest_invitation(invitation_id: str, current_user: dict = Depends(get_current_user)):
+    result = await db.quest_invitations.update_one(
+        {"id": invitation_id, "toUserId": current_user['id'], "status": "pending"},
+        {"$set": {"status": "declined"}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    
+    return {"message": "Invitation declined"}
+
+@api_router.get("/quests/{quest_id}/participants")
+async def get_quest_participants(quest_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all participants who accepted an invitation to this quest"""
+    # Find all accepted invitations for this quest
+    invitations = await db.quest_invitations.find({
+        "questId": quest_id,
+        "status": "accepted"
+    }, {"_id": 0}).to_list(100)
+    
+    participants = []
+    for inv in invitations:
+        user = await db.users.find_one({"id": inv['toUserId']}, {"_id": 0, "passwordHash": 0})
+        if user:
+            # Get their progress on the quest
+            their_quest = await db.quests.find_one({
+                "userId": inv['toUserId'],
+                "originalQuestId": quest_id
+            }, {"_id": 0})
+            
+            participants.append({
+                "userId": user['id'],
+                "name": user['character']['name'],
+                "level": user['character']['level'],
+                "progress": their_quest['currentStep'] if their_quest else 0,
+                "completed": their_quest['completed'] if their_quest else False
+            })
+    
+    return participants
+
 # --- Achievement Routes ---
 @api_router.get("/achievements")
 async def get_achievements(current_user: dict = Depends(get_current_user)):
