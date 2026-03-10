@@ -10,58 +10,58 @@
 
 ## Реалізовані функції
 
-### Фаза 1-4 ✅
+### Фаза 1-5 ✅
 - Авторизація, персонажі, завдання, звички, квести
-- Кастомні винагороди, друзі, повідомлення, профілі
-
-### Фаза 5 ✅
-- Кастомні характеристики, підзавдання (кроки)
-- Пов'язані характеристики (+1 при виконанні)
+- Кастомні винагороди, характеристики, підзавдання
 
 ### Фаза 6 ✅
 - Progress bar звичок (+1%/день, -1%/пропуск, +5%/10 днів)
 - Q&A модальне вікно для звичок
 
-### Фаза 7 ✅ (Поточна)
-- **Запрошення до квестів** - кнопка UserPlus на картці квесту
-- **Модальне вікно вибору друзів** для відправки запрошень
-- **Секція запрошень** - показує pending запрошення з кнопками Accept/Decline
-- **Прийняття запрошення** - копіює квест з isShared=true
-- **Мітка "Спільний"** на прийнятих квестах
-- **Q&A кнопка (?)** з поясненням використання вкладки Квести
+### Фаза 7 ✅
+- Запрошення до квестів
+- Q&A для квестів
+
+### Фаза 8 ✅ (Поточна)
+- **Кнопка сповіщень** (🔔) у header з dropdown
+  - Відображає запрошення до квестів
+  - Відображає сповіщення (досягнення, завершені квести)
+  - "Прочитати всі" функціонал
+  - Лічильник непрочитаних
+- **Кнопка повідомлень** (💬) у header
+  - Навігація до /messages
+  - Лічильник непрочитаних
+- **Сторінка повідомлень** (/messages)
+  - Список усіх діалогів з останнім повідомленням
+  - Пошук по друзям
+  - Реал-тайм оновлення чату
+- **Повідомлення друзям** у FriendsPage
+  - Кнопка "Написати" для кожного друга
+  - ChatWindow компонент
 
 ## Ключові API
 
-### Quest Invitations (нове)
-- `POST /api/quests/{id}/invite` - запросити друга
-- `GET /api/quests/invitations` - список запрошень
-- `POST /api/quests/invitations/{id}/accept` - прийняти
-- `POST /api/quests/invitations/{id}/decline` - відхилити
+### Notifications (нове)
+- `GET /api/notifications` - список сповіщень
+- `GET /api/notifications/unread/count` - кількість непрочитаних
+- `POST /api/notifications/{id}/read` - прочитати
+- `POST /api/notifications/read-all` - прочитати всі
 
-### Habits
-- `POST /api/habits/{id}/track` - з progressGain та streakBonus
-- `POST /api/habits/check-missed-days` - знижує прогрес
+### Messages (оновлено)
+- `GET /api/messages/conversations` - список діалогів
+- `GET /api/messages/{friendId}` - повідомлення з другом
+- `POST /api/messages` - відправити
 
 ## Моделі даних
 
-### Quest (оновлено)
+### Notification (нова)
 ```json
 {
-  "isShared": false,
-  "ownerId": null,
-  "originalQuestId": null
-}
-```
-
-### QuestInvitation (нова)
-```json
-{
-  "questId": "...",
-  "questTitle": "...",
-  "fromUserId": "...",
-  "fromUserName": "...",
-  "toUserId": "...",
-  "status": "pending|accepted|declined"
+  "type": "quest_invite_accepted|quest_complete|achievement|reward_received",
+  "title": "...",
+  "message": "...",
+  "data": {},
+  "read": false
 }
 ```
 
@@ -78,10 +78,9 @@
 - [ ] Сезонні події
 
 ## Тестові звіти
-- `/app/test_reports/iteration_1-7.json`
-- `/app/backend/tests/test_quest_invitations.py`
-- `/app/backend/tests/test_habit_progress.py`
+- `/app/test_reports/iteration_1-8.json`
+- `/app/backend/tests/test_notifications_messages.py`
 
 ## Останнє оновлення
 **Дата**: Березень 2026
-**Фаза 7 завершена**: Система запрошень до квестів з Q&A
+**Фаза 8 завершена**: Система сповіщень та сторінка повідомлень
