@@ -210,6 +210,11 @@ class User(BaseModel):
     lastLogin: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     theme: str = "dark"
 
+class TaskStep(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    completed: bool = False
+
 class Task(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     userId: str
@@ -221,6 +226,8 @@ class Task(BaseModel):
     coinReward: int = 25
     skills: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
+    linkedStats: List[str] = Field(default_factory=list)  # Stats that benefit from this task
+    steps: List[TaskStep] = Field(default_factory=list)  # Subtasks
     priority: str = "medium"
     dueDate: Optional[str] = None
     completed: bool = False
@@ -235,6 +242,8 @@ class TaskCreate(BaseModel):
     difficulty: str = "medium"
     skills: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
+    linkedStats: List[str] = Field(default_factory=list)
+    steps: List[Dict[str, str]] = Field(default_factory=list)
     priority: str = "medium"
     dueDate: Optional[str] = None
 
