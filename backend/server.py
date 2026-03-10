@@ -256,6 +256,7 @@ class Habit(BaseModel):
     frequency: str = "daily"
     streak: int = 0
     bestStreak: int = 0
+    progress: int = 0  # Progress percentage (0-100)
     lastCompleted: Optional[str] = None
     completionDates: List[str] = Field(default_factory=list)
     xpReward: int = 20
