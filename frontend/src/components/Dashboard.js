@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import CharacterCard from './CharacterCard';
 import CharacterStats from './CharacterStats';
@@ -31,8 +31,18 @@ const Dashboard = () => {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [levelUpData, setLevelUpData] = useState({ oldLevel: 1, newLevel: 1 });
   const [achievement, setAchievement] = useState(null);
+  const quickAddRef = useRef(null);
 
   const isUnlocked = user?.character?.level >= 3;
+
+  const scrollToQuickAdd = () => {
+    quickAddRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Focus on input after scroll
+    setTimeout(() => {
+      const input = quickAddRef.current?.querySelector('input[data-testid="task-title-input"]');
+      input?.focus();
+    }, 500);
+  };
 
   useEffect(() => {
     if (token) {
