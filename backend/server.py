@@ -1014,6 +1014,18 @@ async def accept_quest_invitation(invitation_id: str, current_user: dict = Depen
         {"$set": {"status": "accepted"}}
     )
     
+    # Create notification for the quest owner
+    notification = Notification(
+        userId=invitation['fromUserId'],
+        type="quest_invite_accepted",
+        title="Запрошення прийнято!",
+        message=f"{current_user['character']['name']} приєднався до квесту '{original_quest['title']}'",
+        data={"questId": original_quest['id'], "userId": current_user['id']}
+    )
+    notif_dict = notification.model_dump()
+    notif_dict['createdAt'] = notif_dict['createdAt'].isoformat()
+    await db.notifications.insert_one(notif_dict)
+    
     return {"message": "Quest accepted!", "quest": new_quest}
 
 @api_router.post("/quests/invitations/{invitation_id}/decline")
