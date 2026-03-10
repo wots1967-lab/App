@@ -581,6 +581,23 @@ async def complete_task(task_id: str, current_user: dict = Depends(get_current_u
                 user['character']['skills'][skill]['level'] += 1
                 user['character']['skills'][skill]['xp'] -= xp_needed
     
+    # Add progress to linked stats (standard and custom)
+    linked_stats = task.get('linkedStats', [])
+    stat_bonus_per_level = int(stats_multiplier)  # Base 1 per level
+    
+    for stat_key in linked_stats:
+        # Check standard stats
+        if stat_key in user['character']['stats'].__dict__ if hasattr(user['character']['stats'], '__dict__') else stat_key in user['character'].get('stats', {}):
+            current_val = user['character']['stats'].get(stat_key, 0) if isinstance(user['character']['stats'], dict) else getattr(user['character']['stats'], stat_key, 0)
+            user['character']['stats'][stat_key] = current_val + stat_bonus_per_level
+        
+        # Check custom stats
+        custom_stats = user['character'].get('customStats', [])
+        for cs in custom_stats:
+            if cs.get('key') == stat_key or cs.get('id') == stat_key:
+                cs['value'] = cs.get('value', 0) + stat_bonus_per_level
+        user['character']['customStats'] = custom_stats
+    
     await db.users.update_one(
         {"id": current_user['id']},
         {"$set": {"character": user['character']}}
