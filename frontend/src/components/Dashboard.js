@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import CharacterCard from './CharacterCard';
 import CharacterStats from './CharacterStats';
@@ -14,11 +15,12 @@ import MissionPage from './MissionPage';
 import LevelUpModal from './LevelUpModal';
 import AchievementNotification from './AchievementNotification';
 import EquipmentMenu from './EquipmentMenu';
+import NotificationsDropdown from './NotificationsDropdown';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { LogOut, User, Lock, Users } from 'lucide-react';
+import { LogOut, User, Lock, Users, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -26,11 +28,13 @@ const API = `${BACKEND_URL}/api`;
 
 const Dashboard = () => {
   const { user, token, logout, updateUser } = useAuth();
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [levelUpData, setLevelUpData] = useState({ oldLevel: 1, newLevel: 1 });
   const [achievement, setAchievement] = useState(null);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const quickAddRef = useRef(null);
 
   const isUnlocked = user?.character?.level >= 3;
@@ -47,6 +51,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (token) {
       fetchTasks();
+      fetchUnreadMessages();
     }
     // eslint-disable-next-line
   }, [token]);
