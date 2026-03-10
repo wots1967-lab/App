@@ -44,12 +44,17 @@
 - Спільні квести
 - Дарування винагород
 
-### Фаза 4 ✅ (Поточна)
-- **Повідомлення друзям** - ChatWindow компонент з real-time оновленням
-- **Профіль друга** - відображення квестів, місій, винагород та progress bars
-- **Сторінка "Місія"** - картки-нагадування з мудбордом (до 4 зображень), гаслом, 8 кольорів рамки
-- **Завантаження зображень** - з пристрою у Місіях та Винагородах
-- **Порядок блоків Dashboard**: CharacterCard → QuickAddTask → CharacterStats
+### Фаза 4 ✅
+- Повідомлення друзям
+- Профіль друга з квестами, місіями, винагородами
+- Сторінка "Місія" з картками-нагадуваннями
+- Завантаження зображень з пристрою
+
+### Фаза 5 ✅ (Поточна)
+- **Кнопка "Додати"** в блоці "Сьогоднішні завдання"
+- **Кастомні характеристики** - створення, редагування, видалення (бали повертаються)
+- **Підзавдання (кроки)** - додавання кроків до завдань з progress bar
+- **Пов'язані характеристики** - при виконанні завдання +1 до обраних характеристик
 
 ## API Endpoints
 
@@ -58,10 +63,20 @@
 - `POST /api/auth/login` - вхід
 
 ### Tasks
-- `GET/POST /api/tasks` - CRUD завдань
-- `POST /api/tasks/{id}/complete` - виконання
+- `GET/POST /api/tasks` - CRUD завдань (з linkedStats та steps)
+- `POST /api/tasks/{id}/complete` - виконання (з бонусом до характеристик)
 - `POST /api/tasks/{id}/uncomplete` - скасування
+- `POST /api/tasks/{id}/steps` - додати крок
+- `POST /api/tasks/{id}/steps/{stepId}/toggle` - перемкнути крок
+- `DELETE /api/tasks/{id}/steps/{stepId}` - видалити крок
 - `GET /api/tasks/archive` - історія
+
+### Custom Stats
+- `GET /api/user/custom-stats` - список кастомних характеристик
+- `POST /api/user/custom-stats` - створити (label, icon, color)
+- `PUT /api/user/custom-stats/{id}` - оновити
+- `DELETE /api/user/custom-stats/{id}` - видалити (бали повертаються)
+- `POST /api/user/allocate-custom-stats` - розподіл очок
 
 ### Habits
 - `GET/POST /api/habits` - CRUD звичок
@@ -70,30 +85,17 @@
 ### Quests
 - `GET/POST /api/quests` - CRUD квестів
 - `POST /api/quests/{id}/next-step` - виконання кроку
-- `POST /api/quests/{id}/share` - поділитися
 
 ### Missions
 - `GET/POST/PUT/DELETE /api/missions` - CRUD місій
 
 ### Messages
-- `GET /api/messages/{friendId}` - отримати повідомлення
-- `POST /api/messages` - відправити повідомлення
-- `GET /api/messages/unread/count` - кількість непрочитаних
+- `GET /api/messages/{friendId}` - повідомлення
+- `POST /api/messages` - відправити
 
 ### Friends
 - `GET /api/friends` - список друзів
-- `POST /api/friends/add` - додати друга
 - `GET /api/friends/{friendId}/profile` - профіль друга
-
-### Rewards
-- `GET/POST/DELETE /api/rewards` - CRUD винагород
-- `POST /api/rewards/{id}/purchase` - купити
-- `POST /api/rewards/gift` - подарувати
-
-### Shop
-- `GET /api/shop/items` - список мантр
-- `POST /api/shop/purchase/{id}` - купити мантру
-- `POST /api/user/equip/{id}` - екіпірувати
 
 ## Беклог
 
@@ -110,11 +112,12 @@
 - [ ] AI рекомендації завдань
 
 ## Тестові звіти
-- `/app/test_reports/iteration_1.json`
-- `/app/test_reports/iteration_2.json`
-- `/app/test_reports/iteration_3.json`
-- `/app/test_reports/iteration_4.json`
+- `/app/test_reports/iteration_1.json` - Фаза 2
+- `/app/test_reports/iteration_2.json` - Фаза 2 фікси
+- `/app/test_reports/iteration_3.json` - Фаза 3
+- `/app/test_reports/iteration_4.json` - Фаза 4
+- `/app/test_reports/iteration_5.json` - Фаза 5
 
 ## Останнє оновлення
 **Дата**: Березень 2026
-**Фаза 4 завершена**: Система повідомлень, профілі друзів, завантаження зображень
+**Фаза 5 завершена**: Кастомні характеристики, підзавдання, linkedStats
