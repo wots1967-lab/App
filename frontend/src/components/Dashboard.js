@@ -69,6 +69,17 @@ const Dashboard = () => {
     }
   };
 
+  const fetchUnreadMessages = async () => {
+    try {
+      const response = await axios.get(`${API}/messages/unread/count`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUnreadMessages(response.data.count);
+    } catch (error) {
+      console.error('Failed to fetch unread count:', error);
+    }
+  };
+
   const handleTaskComplete = async (taskId) => {
     try {
       const response = await axios.post(
