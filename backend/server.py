@@ -165,6 +165,14 @@ class Stats(BaseModel):
     creativity: int = 0
     charisma: int = 0
 
+class CustomStat(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    key: str
+    label: str
+    icon: str = "⭐"
+    color: str = "text-white"
+    value: int = 0
+
 class Skills(BaseModel):
     fitness: Dict[str, int] = {"level": 1, "xp": 0}
     learning: Dict[str, int] = {"level": 1, "xp": 0}
