@@ -724,13 +724,25 @@ async def track_habit(habit_id: str, current_user: dict = Depends(get_current_us
     habit['bestStreak'] = max(habit.get('bestStreak', 0), habit['streak'])
     habit['lastCompleted'] = today
     
+    # Calculate progress: +1% per day, +5% bonus every 10 consecutive days
+    current_progress = habit.get('progress', 0)
+    progress_gain = 1  # Base +1% per day
+    
+    # Check for 10-day streak bonus
+    if habit['streak'] > 0 and habit['streak'] % 10 == 0:
+        progress_gain += 5  # +5% bonus for every 10 consecutive days
+    
+    new_progress = min(100, current_progress + progress_gain)
+    habit['progress'] = new_progress
+    
     await db.habits.update_one(
         {"id": habit_id},
         {"$set": {
             "streak": habit['streak'],
             "bestStreak": habit['bestStreak'],
             "lastCompleted": today,
-            "completionDates": completion_dates
+            "completionDates": completion_dates,
+            "progress": new_progress
         }}
     )
     
@@ -765,7 +777,9 @@ async def track_habit(habit_id: str, current_user: dict = Depends(get_current_us
         "habit": habit,
         "character": user['character'],
         "leveledUp": leveled_up if habit.get('type') != 'bad' else False,
-        "penaltyApplied": penalty_applied
+        "penaltyApplied": penalty_applied,
+        "progressGain": progress_gain,
+        "streakBonus": progress_gain > 1
     }
 
 @api_router.delete("/habits/{habit_id}")
