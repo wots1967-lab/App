@@ -880,6 +880,196 @@ async def delete_goal(goal_id: str, current_user: dict = Depends(get_current_use
         raise HTTPException(status_code=404, detail="Goal not found")
     return {"message": "Goal deleted"}
 
+# --- Custom Stats Routes ---
+class CustomStatCreate(BaseModel):
+    label: str
+    icon: str = "⭐"
+    color: str = "text-white"
+
+class CustomStatUpdate(BaseModel):
+    label: Optional[str] = None
+    icon: Optional[str] = None
+    color: Optional[str] = None
+
+@api_router.get("/user/custom-stats")
+async def get_custom_stats(current_user: dict = Depends(get_current_user)):
+    custom_stats = current_user['character'].get('customStats', [])
+    return custom_stats
+
+@api_router.post("/user/custom-stats")
+async def create_custom_stat(stat_data: CustomStatCreate, current_user: dict = Depends(get_current_user)):
+    custom_stats = current_user['character'].get('customStats', [])
+    
+    # Create unique key from label
+    base_key = stat_data.label.lower().replace(' ', '_')
+    key = base_key
+    counter = 1
+    existing_keys = [s.get('key', '') for s in custom_stats]
+    while key in existing_keys:
+        key = f"{base_key}_{counter}"
+        counter += 1
+    
+    new_stat = {
+        "id": str(uuid.uuid4()),
+        "key": key,
+        "label": stat_data.label,
+        "icon": stat_data.icon,
+        "color": stat_data.color,
+        "value": 0
+    }
+    
+    custom_stats.append(new_stat)
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {"character.customStats": custom_stats}}
+    )
+    
+    return new_stat
+
+@api_router.put("/user/custom-stats/{stat_id}")
+async def update_custom_stat(stat_id: str, stat_data: CustomStatUpdate, current_user: dict = Depends(get_current_user)):
+    custom_stats = current_user['character'].get('customStats', [])
+    
+    stat_idx = None
+    for idx, s in enumerate(custom_stats):
+        if s.get('id') == stat_id:
+            stat_idx = idx
+            break
+    
+    if stat_idx is None:
+        raise HTTPException(status_code=404, detail="Custom stat not found")
+    
+    if stat_data.label:
+        custom_stats[stat_idx]['label'] = stat_data.label
+    if stat_data.icon:
+        custom_stats[stat_idx]['icon'] = stat_data.icon
+    if stat_data.color:
+        custom_stats[stat_idx]['color'] = stat_data.color
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {"character.customStats": custom_stats}}
+    )
+    
+    return custom_stats[stat_idx]
+
+@api_router.delete("/user/custom-stats/{stat_id}")
+async def delete_custom_stat(stat_id: str, current_user: dict = Depends(get_current_user)):
+    custom_stats = current_user['character'].get('customStats', [])
+    available_points = current_user['character'].get('availableStatPoints', 0)
+    
+    stat_to_delete = None
+    for s in custom_stats:
+        if s.get('id') == stat_id:
+            stat_to_delete = s
+            break
+    
+    if not stat_to_delete:
+        raise HTTPException(status_code=404, detail="Custom stat not found")
+    
+    # Return points to balance
+    points_to_return = stat_to_delete.get('value', 0)
+    new_available_points = available_points + points_to_return
+    
+    new_custom_stats = [s for s in custom_stats if s.get('id') != stat_id]
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {
+            "character.customStats": new_custom_stats,
+            "character.availableStatPoints": new_available_points
+        }}
+    )
+    
+    return {"message": "Stat deleted", "pointsReturned": points_to_return, "availableStatPoints": new_available_points}
+
+@api_router.post("/user/allocate-custom-stats")
+async def allocate_custom_stats(allocation: Dict[str, int], current_user: dict = Depends(get_current_user)):
+    custom_stats = current_user['character'].get('customStats', [])
+    available_points = current_user['character'].get('availableStatPoints', 0)
+    
+    total_allocated = sum(allocation.values())
+    if total_allocated > available_points:
+        raise HTTPException(status_code=400, detail="Not enough available points")
+    
+    # Update custom stats values
+    for stat in custom_stats:
+        stat_id = stat.get('id')
+        if stat_id in allocation:
+            stat['value'] = stat.get('value', 0) + allocation[stat_id]
+    
+    new_available_points = available_points - total_allocated
+    
+    await db.users.update_one(
+        {"id": current_user['id']},
+        {"$set": {
+            "character.customStats": custom_stats,
+            "character.availableStatPoints": new_available_points
+        }}
+    )
+    
+    updated_user = await db.users.find_one({"id": current_user['id']}, {"_id": 0, "passwordHash": 0})
+    return updated_user['character']
+
+# --- Task Steps Routes ---
+@api_router.post("/tasks/{task_id}/steps")
+async def add_task_step(task_id: str, step: Dict[str, str], current_user: dict = Depends(get_current_user)):
+    task = await db.tasks.find_one({"id": task_id, "userId": current_user['id']}, {"_id": 0})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    new_step = {
+        "id": str(uuid.uuid4()),
+        "title": step.get('title', ''),
+        "completed": False
+    }
+    
+    steps = task.get('steps', [])
+    steps.append(new_step)
+    
+    await db.tasks.update_one(
+        {"id": task_id},
+        {"$set": {"steps": steps}}
+    )
+    
+    return new_step
+
+@api_router.post("/tasks/{task_id}/steps/{step_id}/toggle")
+async def toggle_task_step(task_id: str, step_id: str, current_user: dict = Depends(get_current_user)):
+    task = await db.tasks.find_one({"id": task_id, "userId": current_user['id']}, {"_id": 0})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    steps = task.get('steps', [])
+    for step in steps:
+        if step.get('id') == step_id:
+            step['completed'] = not step.get('completed', False)
+            break
+    
+    await db.tasks.update_one(
+        {"id": task_id},
+        {"$set": {"steps": steps}}
+    )
+    
+    return {"steps": steps}
+
+@api_router.delete("/tasks/{task_id}/steps/{step_id}")
+async def delete_task_step(task_id: str, step_id: str, current_user: dict = Depends(get_current_user)):
+    task = await db.tasks.find_one({"id": task_id, "userId": current_user['id']}, {"_id": 0})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    steps = task.get('steps', [])
+    new_steps = [s for s in steps if s.get('id') != step_id]
+    
+    await db.tasks.update_one(
+        {"id": task_id},
+        {"$set": {"steps": new_steps}}
+    )
+    
+    return {"message": "Step deleted"}
+
 # --- Stats Routes ---
 @api_router.get("/stats/overview")
 async def get_stats_overview(current_user: dict = Depends(get_current_user)):
