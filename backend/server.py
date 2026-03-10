@@ -1573,6 +1573,56 @@ async def accept_friend(friend_id: str, current_user: dict = Depends(get_current
     return {"message": "Friend request accepted"}
 
 # --- Messages Routes ---
+@api_router.get("/messages/conversations")
+async def get_all_conversations(current_user: dict = Depends(get_current_user)):
+    """Get all conversations with last message for each friend"""
+    # Get all friends
+    friends = await db.friends.find({
+        "$or": [
+            {"userId": current_user['id'], "status": "accepted"},
+            {"friendId": current_user['id'], "status": "accepted"}
+        ]
+    }, {"_id": 0}).to_list(100)
+    
+    conversations = []
+    for friend_record in friends:
+        friend_id = friend_record['friendId'] if friend_record['userId'] == current_user['id'] else friend_record['userId']
+        
+        # Get friend info
+        friend = await db.users.find_one({"id": friend_id}, {"_id": 0, "passwordHash": 0})
+        if not friend:
+            continue
+        
+        # Get last message
+        last_message = await db.messages.find_one(
+            {"$or": [
+                {"senderId": current_user['id'], "receiverId": friend_id},
+                {"senderId": friend_id, "receiverId": current_user['id']}
+            ]},
+            {"_id": 0},
+            sort=[("createdAt", -1)]
+        )
+        
+        # Count unread messages from this friend
+        unread_count = await db.messages.count_documents({
+            "senderId": friend_id,
+            "receiverId": current_user['id'],
+            "read": False
+        })
+        
+        conversations.append({
+            "friendId": friend_id,
+            "friendName": friend['character']['name'],
+            "friendAvatar": friend['character'].get('avatar', ''),
+            "lastMessage": last_message,
+            "unreadCount": unread_count
+        })
+    
+    # Sort by last message date
+    conversations.sort(key=lambda x: x['lastMessage']['createdAt'] if x['lastMessage'] else '', reverse=True)
+    
+    return conversations
+
 @api_router.get("/messages/{friend_id}")
 async def get_messages(friend_id: str, current_user: dict = Depends(get_current_user)):
     messages = await db.messages.find({
@@ -1597,6 +1647,7 @@ async def send_message(msg_data: MessageCreate, current_user: dict = Depends(get
     
     message = Message(
         senderId=current_user['id'],
+        senderName=current_user['character']['name'],
         receiverId=msg_data.receiverId,
         content=msg_data.content.strip()
     )
@@ -1614,6 +1665,44 @@ async def get_unread_count(current_user: dict = Depends(get_current_user)):
         "read": False
     })
     return {"count": count}
+
+# --- Notifications Routes ---
+@api_router.get("/notifications")
+async def get_notifications(current_user: dict = Depends(get_current_user)):
+    notifications = await db.notifications.find(
+        {"userId": current_user['id']},
+        {"_id": 0}
+    ).sort("createdAt", -1).to_list(50)
+    return notifications
+
+@api_router.get("/notifications/unread/count")
+async def get_unread_notifications_count(current_user: dict = Depends(get_current_user)):
+    count = await db.notifications.count_documents({
+        "userId": current_user['id'],
+        "read": False
+    })
+    # Also count pending quest invitations
+    invitations_count = await db.quest_invitations.count_documents({
+        "toUserId": current_user['id'],
+        "status": "pending"
+    })
+    return {"count": count + invitations_count}
+
+@api_router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, current_user: dict = Depends(get_current_user)):
+    await db.notifications.update_one(
+        {"id": notification_id, "userId": current_user['id']},
+        {"$set": {"read": True}}
+    )
+    return {"message": "Marked as read"}
+
+@api_router.post("/notifications/read-all")
+async def mark_all_notifications_read(current_user: dict = Depends(get_current_user)):
+    await db.notifications.update_many(
+        {"userId": current_user['id'], "read": False},
+        {"$set": {"read": True}}
+    )
+    return {"message": "All marked as read"}
 
 # --- Friend Profile Route ---
 @api_router.get("/friends/{friend_id}/profile")
